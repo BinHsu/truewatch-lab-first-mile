@@ -8,19 +8,8 @@
 > do the thing. Then update with the result. A post-hoc-only handoff is worthless precisely when it
 > is needed. See `AGENTS.md` §4.
 
-**Last updated:** 2026-08-04 — About to cut annotated tag **`v0.0.2`** on `main` (DataKit
-live HTTP 200 `[VERIFIED]`). Exact command after this commit:
-
-```bash
-git tag -a v0.0.2 -m "v0.0.2 DataKit emit via Compose"
-git push origin v0.0.2
-gh release create v0.0.2 --title "v0.0.2 — DataKit ingest" --notes-file - <<'EOF'
-…
-EOF
-```
-
-If the session dies after push of this commit but before the tag: run the commands
-above on the release commit SHA recorded in the next handoff update.
+**Last updated:** 2026-08-04 — **v0.0.2 released** (`e287eb7`); next implement **v0.0.3**
+DDTrace metric (StatsD) + span per ADR-0003.
 
 ---
 
@@ -28,8 +17,8 @@ above on the release commit SHA recorded in the next handoff update.
 
 1. `docs/handoff/CURRENT.md` (this file)
 2. `README.md` / `CHANGELOG.md`
-3. `docs/observability-glossary.md` (console map + terms)
-4. `docs/runbooks/datakit-emit.md`
+3. `docs/runbooks/datakit-emit.md`
+4. `docs/observability-glossary.md`
 5. `docs/ADR/0002-release-tags-and-emit-mode.md` / `docs/ADR/0003-otel-trace-path.md`
 6. `docs/runbooks/owl-cli-credentials.md`
 7. `AGENTS.md`
@@ -37,19 +26,19 @@ above on the release commit SHA recorded in the next handoff update.
 
 ## 2. Last completed milestone
 
-**v0.0.1 — DataWay** (tagged `6be3e7f`). **v0.0.2 DataKit path live-verified on this host**
-(untagged until release cut).
+**v0.0.2 — DataKit ingest path** (tagged). Live POST HTTP 200 + OWL `path=datakit` /
+`ping=1` `[VERIFIED]` 2026-08-04 on id1 (Colima Compose).
 
 | Tag / commit | Content |
 |---|---|
 | `v0.0.1` / `6be3e7f` | DataWay — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.1 |
-| *(ready to tag)* `v0.0.2` | DataKit Compose + `emit_datakit.py` — live HTTP 200 `[VERIFIED]` 2026-08-04 |
+| `v0.0.2` / `e287eb7` | DataKit — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.2 |
 | *(planned)* `v0.0.3` | DDTrace **metric (StatsD) + span** → DataKit |
 | *(planned)* `v0.0.4` | OTLP **metric + span** → DataKit ([ADR-0003](../ADR/0003-otel-trace-path.md)) |
 
 ## 3. Repository state
 
-- Branch: `main` (local commits may be ahead of origin — check `git status`)
+- Branch: `main` (track `origin/main`)
 - Remote: `https://github.com/BinHsu/truewatch-lab-first-mile.git`
 - Visibility: **public**
 - Hooks: `core.hooksPath=.githooks`
@@ -57,66 +46,53 @@ above on the release commit SHA recorded in the next handoff update.
 ## 4. Environment / system state
 
 - Site **id1**; local `.env` has OWL + Workspace Token + DataWay / `DK_DATAWAY` (gitignored).
-- OWL: `owl workspace list` OK `[VERIFIED]`.
-- Host Docker: **Colima** running `[VERIFIED]` (Docker 29.x + Compose 5.4).
-- DataKit Compose: `pubrepo.truewatch.com/truewatch/datakit:2.7.1`, profile `datakit`,
-  port **9529**, health `/v1/ping` → 200 `[VERIFIED]`.
+- OWL: Open API key OK; metric query for lab series OK `[VERIFIED]`.
+- Host Docker: **Colima** running `[VERIFIED]`.
+- DataKit Compose may still be up from verify (`--profile datakit`).
 
 ## 5. Commands already run
 
 ```bash
-colima start --cpu 2 --memory 4 --arch aarch64
 docker compose --profile datakit --env-file .env up -d datakit
-curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:9529/v1/ping   # 200
 DATAKIT_URL=http://127.0.0.1:9529 python3 scripts/emit.py --mode datakit
-DATAKIT_URL=http://127.0.0.1:9529 python3 scripts/emit.py --mode datakit --also-log
-# → metric_post=OK / logging_post=OK (HTTP 200)
+# metric_post=OK; OWL: ping=1 path=datakit
+git tag -a v0.0.2 && git push origin v0.0.2
+gh release create v0.0.2
 ```
 
 ## 6. Test results
 
 - DataWay POST: **pass** `[VERIFIED]` (v0.0.1).
-- OWL Open API: **pass** `[VERIFIED]`.
-- DataKit dry-run: **pass** `[VERIFIED]`.
-- DataKit live POST (local → `:9529` → DataWay): **pass** `[VERIFIED]` HTTP 200 metric + logging.
-- Explorer `path=datakit`: **owner Group B** `[UNVERIFIED]`.
-- Compose `emit` image build path: optional / not required for host Python emit `[UNVERIFIED]`.
+- DataKit live POST + OWL metric: **pass** `[VERIFIED]` (v0.0.2).
+- DDTrace / OTel: stubs exit 2 `[VERIFIED]`.
 
 ## 7. Current blockers, in priority order
 
-1. Owner: confirm Explorer `path=datakit` (optional but preferred before tag).
-2. Commit pending docs (glossary, ADR-0003, `dk` runbook notes, handoff) + cut **`v0.0.2`**.
-3. Then **v0.0.3** DDTrace: StatsD metric + span.
-4. Then **v0.0.4** OTel: OTLP metric + span.
+1. Implement **v0.0.3** (StatsD metric + DDTrace span via DataKit).
+2. Then **v0.0.4** (OTLP metric + span).
+3. Optional: Monitor/Dashboard scope (`AWAITING DECISION`).
 
 ## 8. AWAITING DECISION — owner only
 
-1. Confirm Explorer sighting for `path=datakit`, or tag `v0.0.2` on HTTP-only evidence.
-2. Whether first visibility milestone includes Monitor + Dashboard, or Explorer-only per path.
+1. Whether first visibility milestone includes Monitor + Dashboard, or Explorer-only per path.
 
 ## 9. Exact next safe action
 
-Owner checks Explorer (`truewatch_lab_first_mile` / `path=datakit`), then cut release:
+Start **v0.0.3** per ADR-0003: enable DataKit `ddtrace` + `statsd` inputs in Compose,
+implement `scripts/emit_ddtrace.py` (metric + span), runbook, tag when both signals
+visible in Metrics + APM.
 
 ```bash
-# optional Group B: Metrics / Explorer filter path=datakit
-git status -sb
-# when ready (owner asks): tag v0.0.2 on the DataKit commit, push, update this handoff
+python3 scripts/emit.py --mode ddtrace   # currently NOT-IMPLEMENTED exit 2
+ls docs/ADR/0003-otel-trace-path.md
 ```
-
-Keep DataKit up with:
-`docker compose --profile datakit --env-file .env up -d datakit`
 
 ## 10. Things that will bite you
 
 - Cloudflare **1010** on direct DataWay if User-Agent is `Python-urllib/*`.
 - **Client Tokens** ≠ OWL API Key.
 - Compose DataKit needs `--profile datakit` + `DK_DATAWAY`.
-- Host emit: `DATAKIT_URL=http://127.0.0.1:9529`; Compose emit default `http://datakit:9529`.
-- DataKit **DEBUG** logs may print full `ENV_DATAWAY` URLs including token — redact before
-  pasting logs; never commit log dumps.
-- `emit_ddtrace.py` still `NOT-IMPLEMENTED` until v0.0.3.
-- `emit_otel.py` still `NOT-IMPLEMENTED` until v0.0.4.
+- Measurement **`dk`** is DataKit self-metrics, not lab `ping`.
+- DataKit DEBUG logs may include DataWay token — redact.
+- `emit_ddtrace` / `emit_otel` must stay non-zero until implemented (dual metric+span).
 - Never commit `.env`.
-- Official path stays **Docker Compose**; Apple Container is out of scope for this lab.
-- Terms / console map: `docs/observability-glossary.md` (span ≠ spam; traces live under **APM**).
