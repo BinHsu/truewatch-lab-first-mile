@@ -32,10 +32,12 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `AGENTS.md` | The operating contract for every agent and human: read-first order, single-source-of-status, handoff protocol, evidence standard, decision records, never-commit list, tool-access classes, destructive-action protocol, and the rule against checks that cannot fail. Tool-agnostic. | Any agent or contributor, first |
 | `CLAUDE.md` | Claude Code-only mechanics on top of `AGENTS.md`, which it imports on line 1. Permissions, delegation boundary, conflict resolution. Holds no shared policy. | Claude Code sessions |
 | `README.md` | What this lab is (TrueWatch first-mile), start-here pointers, and that status lives only in handoff. States no project status by design. | Forkers, first-time readers |
+| `CHANGELOG.md` | Release notes for git tags v0.0.1+ (DataWay / DataKit / DDTrace slices). | Anyone cutting or consuming a release tag |
+| `docker-compose.yml` | Compose entry for lab services; v0.0.1 ships `emit` (DataWay). DataKit/DDTrace services planned for later tags. | Forkers preferring a clean Docker host |
 | `SECURITY.md` | Security ground rules an agent must not guess at: secrets, untrusted input, external actions, dependencies. | Reviewers; anyone touching secrets or external systems |
 | `PRODUCT_SENSE.md` | The product red line that hidden destructive actions are a defect, plus the preview/confirm/log/abort protocol. Restates the protocol also given in `AGENTS.md` §10. | Any agent before a destructive command |
 | `.gitignore` | Declares what must never be committed. Note the git gotcha recorded in `AGENTS.md` §7: ignore `dir/*`, not `dir/`, or a negation cannot re-include a member. | Anyone adding a file type that might carry secrets |
-| `.env.example` | Names of local env vars for TrueWatch/OWL tokens; copy to `.env` (gitignored). Never real secrets. | Anyone wiring ingest or OWL |
+| `.env.example` | Names of local env vars for OWL API keys, Workspace Token, and DataWay/DK_DATAWAY; copy to `.env` (gitignored). Never real secrets. | Anyone wiring ingest or OWL |
 | `docs/FILE-MAP.md` | This file. The exhaustive manifest. | Anyone about to create a new file |
 
 ## `.claude/` — Claude Code harness
@@ -73,6 +75,12 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `docs/design/acceptance-criteria.md` | How to write acceptance criteria an agent can actually run: the Group A / Group B split, and how a Group B step is made auditable by a Group A command. | Anyone defining a milestone, phase or exit gate |
 | `docs/handoff/CURRENT.md` | The single source of project status and the exact next safe action. The file that lets a cold agent or human resume with no chat history. | Every worker, before anything else |
 | `docs/truewatch-owl.md` | Canonical TrueWatch OWL/MCP/CLI guidance for this lab (synced from the trial workspace). Prefer over legacy `/mcp-server/` docs. | Anyone integrating TrueWatch or advising MCP setup |
+| `docs/runbooks/owl-cli-credentials.md` | Credentials runbook: Client Tokens → OWL `.env` (§3–4), Workspace Token + DataWay (§5 W1–W5), OWL CLI install/verify (§6 A–G). | Forkers wiring OWL or ingest credentials |
+| `docs/runbooks/dataway-emit.md` | Forker steps to dry-run and POST via DataWay (`scripts/emit.py --mode dataway` or Compose), then find it in Explorer. | Anyone proving ADR-0001 DataWay path |
+| `docs/ADR/INDEX.md` | Routes decision records by reader goal. | Anyone looking for why a lab choice was made |
+| `docs/ADR/0001-three-ingest-paths.md` | Accepted decision: lab exercises DataKit, DataWay direct write, and DDTrace→DataKit (not Datadog Agent→DataKit). | Anyone implementing or scoping ingest emitters |
+| `docs/ADR/0002-release-tags-and-emit-mode.md` | Accepted: tags v0.0.1–v0.0.3, `EMIT_MODE` / `--mode`, Docker-first preference. | Anyone cutting releases or adding emit modes |
+| `docker/Dockerfile.emitter` | Alpine Python image running `scripts/emit.py` for Compose. | Compose build for `emit` service |
 | `docs/validation/evidence/README.md` | The fixed artifact format for a Group B observation: header fields, redaction rules, worked template. | Anyone recording a manual or instrumented verification |
 | `docs/validation/evidence/REQUIRED.json` | Machine-readable manifest of which artifacts each phase must produce, plus the field, tag and forbidden-pattern configuration the validator enforces. Authoritative — the validator rejects artifacts it does not list. | The validator; anyone adding a phase or an artifact |
 
@@ -83,9 +91,13 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `scripts/audit-agent-compliance.sh` | Periodically re-tests that an agent still obeys a named `SECURITY.md` rule under realistic prompting, catching "the rule drifted to the unread middle of the file". Reports `SKIP` when no agent CLI is on `PATH` and `INCONCLUSIVE` when the harness returns nothing — neither grades as a finding. | Whoever runs the monthly drift check |
 | `scripts/audit-tool-registry.sh` | Finds holes in the tool layer: tools called in code but undeclared, declared tools with no timeout, destructive tools with no approval gate. Exits non-zero on any finding and reports `SKIPPED` for the section it could not evaluate. Needs `yq`. | CI; anyone adding a tool |
 | `scripts/check-file-map.sh` | `PostToolUse(Write)` hook backing this index. Nags when a newly written, non-ignored, in-repo path is missing here. Never blocks, always exits 0. | Claude Code (automatically) |
-| `scripts/cleanup-scanner.py` | Real secret-residue scan of the working tree and staged diff: sensitive filenames, tracked `.env` files, hardcoded-credential patterns. Exit 1 on any finding. Pure stdlib. | CI; the pre-commit hook; anyone ending a session |
+| `scripts/cleanup-scanner.py` | Secret-residue scan: staged/tracked sensitive files and credential patterns. Gitignored local `.env` is allowed (approved lab path). Exit 1 on findings. Pure stdlib. | CI; the pre-commit hook; anyone ending a session |
 | `scripts/safe-exec.sh` | Wraps a destructive command in preview → confirm → log → execute, so destruction is never the silent default. | Anyone aliasing a dangerous command |
 | `scripts/security-benchmark.py` | Security asserted as a benchmark rather than a review item. **Ships with three unimplemented benchmarks that report `NOT-IMPLEMENTED` and are never counted as passes.** `--require-implemented` turns it into a gate once wired. | CI; whoever specialises the benchmarks per stack |
+| `scripts/emit.py` | Unified emitter entry: `--mode` / `EMIT_MODE` dispatches to mode scripts. | Anyone emitting lab telemetry |
+| `scripts/emit_dataway.py` | DataWay mode (v0.0.1): synthetic metric/log to `/v1/write/…`; redacts token; lab User-Agent (avoids CF 1010). | Forkers / agents proving DataWay ingest |
+| `scripts/emit_datakit.py` | DataKit mode stub until v0.0.2 — prints `NOT-IMPLEMENTED`, exits 2. | Callers of `EMIT_MODE=datakit` before that release |
+| `scripts/emit_ddtrace.py` | DDTrace mode stub until v0.0.3 — prints `NOT-IMPLEMENTED`, exits 2. | Callers of `EMIT_MODE=ddtrace` before that release |
 
 ## `tests/` — toolchain-independent checks
 
@@ -106,6 +118,5 @@ member, and add its rows here in the same change.
 
 | Path | What it would hold |
 |---|---|
-| `docs/ADR/` | Decision records, MADR format, plus `INDEX.md` routing by reader goal (`AGENTS.md` §6) |
 | `docs/validation/evidence/*.md` | The Group B evidence artifacts themselves, one per observation |
 | `.agent-context/` | `destructive-log.jsonl` and other operator-local agent state. Gitignored — never committed |

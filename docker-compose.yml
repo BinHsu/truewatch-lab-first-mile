@@ -1,0 +1,17 @@
+# Prefer Compose for a clean lab host (ADR-0002).
+# DataWay emit (v0.0.1):
+#   docker compose --env-file .env run --rm emit
+#   docker compose --env-file .env run --rm -e EMIT_MODE=dataway emit --dry-run
+#
+# DataKit / DDTrace services land in v0.0.2 / v0.0.3 (not in this release).
+
+services:
+  emit:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.emitter
+    env_file:
+      - .env
+    environment:
+      EMIT_MODE: ${EMIT_MODE:-dataway}
+    # Pass-through args after service name, e.g. run --rm emit --also-log

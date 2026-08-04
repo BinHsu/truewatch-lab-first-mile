@@ -49,22 +49,40 @@ def tracked_files() -> list[str]:
         return []
 
 
+def _is_gitignored(path: str) -> bool:
+    try:
+        subprocess.check_output(
+            ["git", "check-ignore", "-q", path],
+            stderr=subprocess.DEVNULL,
+        )
+        return True
+    except subprocess.CalledProcessError:
+        return False
+
+
 def scan() -> list[str]:
     issues: list[str] = []
+    staged = set(staged_files())
+    tracked = set(tracked_files())
 
-    # 1. critical files present anywhere in tree
+    # 1. critical files: fail if staged/tracked, or present and NOT gitignored.
+    # A local gitignored `.env` is the approved lab secret path (SECURITY.md) —
+    # presence alone must not block pre-commit.
     for name in CRITICAL_FILES:
-        if os.path.exists(name):
-            issues.append(f"CRITICAL: sensitive file present: {name}")
+        if name in staged or name in tracked:
+            issues.append(f"CRITICAL: sensitive file staged/tracked: {name}")
+            continue
+        if os.path.exists(name) and not _is_gitignored(name):
+            issues.append(f"CRITICAL: sensitive file present (not gitignored): {name}")
 
-    # 2. critical files tracked by git (worse — committed)
-    for f in tracked_files():
+    # 2. any tracked .env* (except *.example / *.sample)
+    for f in tracked:
         base = os.path.basename(f)
         if base.startswith(".env") and not f.endswith(EXCLUDE_SUFFIXES):
             issues.append(f"CRITICAL: .env file is tracked: {f}")
 
     # 3. content scan on staged files (pre-commit) or tracked (CI)
-    targets = staged_files() or tracked_files()
+    targets = list(staged) or list(tracked)
     for f in targets:
         if f.endswith(EXCLUDE_SUFFIXES) or not os.path.isfile(f):
             continue

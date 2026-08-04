@@ -11,8 +11,9 @@ Read this before writing any code that touches data, secrets, or external system
 - When logging or printing variables, redact: `password`, `token`, `api_key`,
   `secret`, `authorization`, and any field matching `*_KEY` or `*_TOKEN`.
 - Approved secret-loading paths: local `.env` / process env for emitter and OWL CLI
-  (`TRUEWATCH_API_KEY`, `OWL_TOKEN`, `OWL_API_KEY`); CI uses GitHub Actions secrets only if added
-  later, never echoed to logs. `.env.example` lists names only.
+  (`TRUEWATCH_API_KEY`, `OWL_TOKEN`, `OWL_API_KEY`, `TRUEWATCH_WORKSPACE_TOKEN`, `DK_DATAWAY`);
+  CI uses GitHub Actions secrets only if added later, never echoed to logs. `.env.example` lists
+  names only.
 
 ## 2. Untrusted Input
 

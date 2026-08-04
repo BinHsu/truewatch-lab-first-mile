@@ -1,0 +1,10 @@
+# Lab emitter — stdlib Python only. Prefer this over host Python for a clean env.
+FROM python:3.12-alpine
+
+WORKDIR /lab
+COPY scripts/emit.py scripts/emit_dataway.py scripts/emit_datakit.py scripts/emit_ddtrace.py ./scripts/
+
+# Default path for v0.0.1; override with EMIT_MODE / compose command.
+ENV EMIT_MODE=dataway
+ENTRYPOINT ["python3", "scripts/emit.py"]
+CMD []

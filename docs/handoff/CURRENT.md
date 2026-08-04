@@ -8,97 +8,91 @@
 > do the thing. Then update with the result. A post-hoc-only handoff is worthless precisely when it
 > is needed. See `AGENTS.md` §4.
 
-**Last updated:** 2026-08-04 — bootstrap from `BinHsu/aegis-template` + sync TrueWatch OWL notes from trial workspace; handoff ready for Open Folder
+**Last updated:** 2026-08-04 — releasing **v0.0.1** (DataWay + unified `EMIT_MODE`); next slice v0.0.2 DataKit
 
 ---
 
 ## 1. Read these first
 
 1. `docs/handoff/CURRENT.md` (this file)
-2. `README.md`
-3. `AGENTS.md`
-4. `docs/truewatch-owl.md`
-5. `docs/FILE-MAP.md` (before creating any new file)
-
-`docs/ADR/INDEX.md` is referenced by the scaffold but **does not exist yet** — create `docs/ADR/` when the first decision is recorded.
-
-You do **not** need any conversation history. If something here is unclear, that is a defect in this
-file — fix it rather than guessing.
+2. `README.md` / `CHANGELOG.md`
+3. `docs/ADR/0002-release-tags-and-emit-mode.md`
+4. `docs/runbooks/dataway-emit.md`
+5. `docs/runbooks/owl-cli-credentials.md`
+6. `AGENTS.md`
+7. `docs/FILE-MAP.md` (before creating any new file)
 
 ## 2. Last completed milestone
 
-Repo bootstrapped as a public GitHub project from the aegis template. TrueWatch OWL integration guidance synced into `docs/truewatch-owl.md`. Project identity placeholders filled in `AGENTS.md` / `CLAUDE.md` / `README.md` / `SECURITY.md`. Local git hooks path set. **No synthetic emitter or DataKit wiring yet.**
+**v0.0.1 — DataWay ingest path.** Unified `scripts/emit.py` (`--mode` / `EMIT_MODE`), working
+`emit_dataway.py` (HTTP 200 on id1), stubs for datakit/ddtrace (`NOT-IMPLEMENTED`, exit 2),
+Compose emitter image files, credentials + DataWay runbooks, ADR-0001/0002.
 
-| Commit | Content |
+| Tag / commit | Content |
 |---|---|
-| `c838e64` | Initial commit (from `BinHsu/aegis-template`) |
-| `7eaacf5` | Sync OWL docs + fill project placeholders + this handoff |
+| `v0.0.1` | DataWay release (this cut) |
+| *(planned)* `v0.0.2` | DataKit |
+| *(planned)* `v0.0.3` | DDTrace → DataKit |
 
 ## 3. Repository state
 
 - Branch: `main`
 - Remote: `https://github.com/BinHsu/truewatch-lab-first-mile.git`
 - Visibility: **public**
-- Hooks active: `git config core.hooksPath .githooks` → **yes** (set after clone)
-- Local path is machine-specific and deliberately not recorded here.
+- Hooks: `core.hooksPath=.githooks`
 
 ## 4. Environment / system state
 
-- TrueWatch test workspace / API Key: owner has a PDSA trial account; **credentials are not in this repo** `[ASSUMED]` until `.env` is created locally from `.env.example`.
-- DataKit / OWL CLI / OWL MCP: **not installed or verified in this repo yet** `[UNVERIFIED]`.
-- Synthetic emitter: **not written yet**.
-- Prior scratch notes lived in a separate Cursor workspace (`bin.hsu.truewatch.trial`); canonical continuity is this repo after Open Folder.
+- Site **id1**; local `.env` has OWL + Workspace Token + DataWay (gitignored).
+- OWL CLI v1.1.1; `owl sync` OK.
+- Host Docker: **not installed** on the machine that cut v0.0.1 — Compose files are the forker
+  contract; host `python3 scripts/emit.py` is the verified path here.
+- DataKit: not installed.
 
 ## 5. Commands already run
 
 ```bash
-gh repo create truewatch-lab-first-mile --template BinHsu/aegis-template --public --clone
-# (clone landed under the owner's Documents directory)
-git config core.hooksPath .githooks
-gh repo view --json name,url,visibility
-# → PUBLIC https://github.com/BinHsu/truewatch-lab-first-mile
+set -a && source .env && set +a
+python3 scripts/emit.py --mode dataway --dry-run
+python3 scripts/emit_dataway.py   # earlier: metric_http_status=200 after UA fix
+python3 scripts/emit.py --mode datakit   # → NOT-IMPLEMENTED exit 2
+python3 scripts/emit.py --mode ddtrace   # → NOT-IMPLEMENTED exit 2
 ```
 
 ## 6. Test results
 
-- Scaffold security scripts / CI: **not run** in this handoff cycle.
-- TrueWatch ingest / DQL / Monitor / Dashboard: **not run** (no emitter yet).
+- DataWay POST metric/logging: **pass** `[VERIFIED]` HTTP 200 (lab User-Agent; CF 1010 on Python-urllib).
+- Unified dispatcher + stubs: **pass** `[VERIFIED]` (datakit/ddtrace exit 2).
+- Compose build: **not run** (no Docker on this host) `[UNVERIFIED]`.
+- Explorer UI sighting: **owner Group B** `[UNVERIFIED]`.
 
 ## 7. Current blockers, in priority order
 
-1. Owner must **Open Folder** on this repo in Cursor so subsequent agent work targets the correct workspace (not the trial scratch folder).
-2. Site / API Key / DataKit install base URL still need owner input before live ingest.
-3. First-mile emitter + loop acceptance criteria not implemented.
+1. Implement **v0.0.2** DataKit (Compose preferred).
+2. Then **v0.0.3** DDTrace → DataKit.
+3. Optional: owner confirms Explorer visibility; OWL MCP in Cursor; Monitor/Dashboard scope.
 
 ## 8. AWAITING DECISION — owner only
 
-Do not resolve these by inference. They are recorded, not forgotten.
-
-1. TrueWatch **site / OWL MCP endpoint** for the test workspace (e.g. `us1-owl-mcp.truewatch.com`).
-2. Ingest path for the emitter: DataKit (preferred for realism) vs direct/custom push for the first slice.
-3. Whether Day-1 scope includes a Monitor trigger + Dashboard JSON, or emitter + Explorer visibility only.
+1. ~~Site~~ id1. ~~Ingest set~~ ADR-0001. ~~Release slicing~~ ADR-0002.
+2. Whether first visibility milestone includes Monitor + Dashboard, or Explorer-only per path.
 
 ## 9. Exact next safe action
 
+Start **v0.0.2** DataKit slice (Compose): install/run DataKit with `DK_DATAWAY`, implement
+`scripts/emit_datakit.py`, wire compose service, tag `v0.0.2` when HTTP + Explorer path works.
+
 ```bash
-# After Cursor → File → Open Folder on this repository:
-# 1) Confirm hooks still set
-git config --get core.hooksPath
-# expect: .githooks
-
-# 2) Start the first-mile workload (no secrets in git):
-#    create emitter under services/ or scripts/ per FILE-MAP update in same change
-#    copy .env.example → .env locally and fill TrueWatch token (never commit .env)
-ls README.md docs/truewatch-owl.md docs/handoff/CURRENT.md
+# v0.0.1 smoke (host):
+set -a && source .env && set +a
+python3 scripts/emit.py --mode dataway --dry-run
+# If Docker available:
+# docker compose --env-file .env run --rm emit --mode dataway --dry-run
+ls docs/ADR/0002-release-tags-and-emit-mode.md docker-compose.yml
 ```
-
-Next implementation milestone (after Open Folder): add a short-lived synthetic metric/log emitter (Docker or plain Python), document how to see data in TrueWatch Explorer, keep secrets in `.env` only.
 
 ## 10. Things that will bite you
 
-- **Wrong Cursor workspace:** continuing in `bin.hsu.truewatch.trial` edits the scratch folder, not this public repo. Open this folder first.
-- **Legacy MCP docs:** https://docs.truewatch.com/mcp-server/ is stale; use OWL docs in `docs/truewatch-owl.md`.
-- **Dashboard via MCP:** dashboard create/replace is CLI-only per OWL docs — do not promise MCP dashboard writes.
-- **ai-skills About text overpromises:** only `owl-diagnostics` exists today; see `docs/truewatch-owl.md`.
-- **Agent sandbox vs `gh`:** Cursor Agent may inject invalid `GH_TOKEN` or stay sandboxed; owner terminal `gh auth status` can be fine while the agent cannot. Prefer owner terminal for `gh` auth-sensitive ops if the agent fails.
-- **Public repo:** never commit API keys, workspace tokens, or customer data; synthetic data only.
+- Cloudflare **1010** if User-Agent is `Python-urllib/*` against id1-openway.
+- Do not treat datakit/ddtrace stubs as green — they must stay non-zero until implemented.
+- Never commit `.env`.

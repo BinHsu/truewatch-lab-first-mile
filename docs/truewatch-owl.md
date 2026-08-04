@@ -48,6 +48,14 @@ Prefer the **OWL** stack. Do not treat the legacy Tobylike MCP page as current.
 
 If docs disagree, prefer OWL Quick Start / MCP Tools Reference over `/mcp-server/`.
 
+## Lab runbook (credentials + CLI)
+
+Step-by-step console → `.env` → `owl sync`:
+[`docs/runbooks/owl-cli-credentials.md`](runbooks/owl-cli-credentials.md).
+
+On the PDSA trial console used for this lab, the Open API credential menu is
+**Management → Client Tokens** (official docs still say API Key Management).
+
 ## Working rules for this lab
 
 1. When advising MCP setup, use **OWL MCP** endpoints and **Bearer** auth—never the Tobylike URL or composite `Endpoint=SITE_KEY` header unless the owner explicitly asks about legacy compatibility.
