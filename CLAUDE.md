@@ -1,6 +1,6 @@
 @AGENTS.md
 
-# CLAUDE.md — {{PROJECT_NAME}} (Claude-specific only)
+# CLAUDE.md — truewatch-lab-first-mile (Claude-specific only)
 
 > **All shared agent policy for this repo lives in [`AGENTS.md`](AGENTS.md)**, imported on line 1
 > above. Claude Code does not read `AGENTS.md` on its own, which is the only reason that import
@@ -42,8 +42,10 @@ classification they implement is defined in `AGENTS.md`, not here — settings a
 If two documents disagree, the more recent and more specific wins — but record the drift in
 `docs/handoff/CURRENT.md` rather than silently picking one.
 
-## {{Anything else Claude-specific}}
+## TrueWatch / OWL
 
-{{e.g. a hook that must exist for this repo, an MCP server this repo depends on and why it must be
-called rather than answered from memory, a repo-local skill. Delete this section if it stays empty —
-an empty placeholder is worse than no section.}}
+- Product integration rules: `docs/truewatch-owl.md` (do not answer OWL/MCP setup from memory when
+  this file disagrees with official docs).
+- Prefer configured OWL MCP (`Authorization: Bearer …`) or local `owl` + `owl-diagnostics` over
+  inventing DQL results.
+- Legacy Tobylike MCP URL/header must not be recommended unless the owner asks for legacy compat.

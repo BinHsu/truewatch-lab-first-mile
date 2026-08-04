@@ -1,4 +1,4 @@
-# AGENTS.md — operating contract for {{PROJECT_NAME}}
+# AGENTS.md — operating contract for truewatch-lab-first-mile
 
 > **This is the primary policy file for every agent and human working here** — Claude, Codex, Grok,
 > Cursor, Devin, Copilot, people. `CLAUDE.md` imports this file on its first line and holds nothing
@@ -34,12 +34,22 @@ two.
 
 ## 1. What this repo is
 
-{{ONE PARAGRAPH — what this service/project does, its archetype (stateless-sync / async-decoupled /
-stateful), and its calibration, e.g. "production-shape at PoC scale".}}
+**truewatch-lab-first-mile** is a public PDSA onboarding lab: a synthetic first-mile observability
+loop against TrueWatch (ingest → query → alert → optional AI/OWL assist). Archetype is closer to
+**stateless-sync** (short-lived emitter + docs), calibrated as **production-shaped harness at PoC
+scale** — aegis security scaffold kept; workload code still to be added. TrueWatch product rules
+live in `docs/truewatch-owl.md`.
 
 ## 2. Files and their roles
 
-{{TABLE — the handful of files a new agent must know about, and what each is for. Keep it short.}}
+| Path | Role |
+|---|---|
+| `docs/handoff/CURRENT.md` | Sole project status + next safe action |
+| `docs/truewatch-owl.md` | Canonical TrueWatch OWL/MCP/CLI guidance for this lab |
+| `README.md` | What the lab is and how to start |
+| `AGENTS.md` | This operating contract |
+| `SECURITY.md` | Secrets / external-action rules |
+| `.env.example` | Local secret names only; copy to `.env` (gitignored) |
 
 The exhaustive list is `docs/FILE-MAP.md`. This section is the curated shortlist; that file is the
 manifest. Keep them separate — see "Before you create any file" above.
@@ -149,9 +159,10 @@ something, name it explicitly in the handoff.
 | **Destructive** | `rm -rf`, `git push --force`, `git reset --hard`, `drop table`, `kubectl delete`, `terraform apply/destroy` | default-deny, explicit approve each time |
 
 Enforced for Claude Code in `.claude/settings.json`. Other agents: honour this table.
-{{Add any repo-specific destructive operations here — e.g. publishing a package, sending an outbound
-message, rotating a shared credential, writing to a device. If an operation is irreversible or
-visible to others, it is destructive regardless of how small the command looks.}}
+
+Repo-specific destructive (explicit `confirm` each time): writing TrueWatch monitors/dashboards;
+`owl` write tools (`create` / `replace` / `upsert` / `add` / `receive`); pushing secrets or real
+customer data to this public remote; force-push to `main`.
 
 ## 10. Destructive-action protocol
 
@@ -205,9 +216,9 @@ Before you wire anything into CI, or inherit something already wired:
 
 ## 13. Repo-specific rules
 
-{{Add only repo-specific constraints here, e.g.:
-- public/private boundary — which names must NOT appear in committed files
-- archetype-specific isolation posture (namespace vs node-group vs dedicated cluster)
-- hard safety gates unique to this domain
-Anything cross-project belongs in `~/.claude/CLAUDE.md`. Anything Claude-specific belongs in
-`CLAUDE.md`. Delete this section if it stays empty.}}
+- Follow `docs/truewatch-owl.md` for TrueWatch/OWL/MCP. Prefer OWL docs over legacy `/mcp-server/`.
+- This repo is **public**: commit only synthetic demo data and redacted templates. No API keys,
+  `OWL_TOKEN`, Bearer tokens, or customer payloads.
+- Do not promise dashboard create/replace via MCP; that path is CLI/console per OWL docs.
+- Prefer read-only OWL tools unless the owner explicitly requests a write.
+- Cite absolute times for observability answers; empty results are valid outcomes.
