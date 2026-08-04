@@ -24,7 +24,9 @@ services:
       # Upstream to TrueWatch — same value as host-install DK_DATAWAY
       ENV_DATAWAY: ${DK_DATAWAY:?set DK_DATAWAY in .env (runbook owl-cli-credentials §5)}
       ENV_HTTP_LISTEN: "0.0.0.0:9529"
-      # Lab: HTTP write sink only — no host/container collectors / rootfs mounts
+      # Lab: HTTP write sink only — no host/container collectors / rootfs mounts.
+      # "dk" = DataKit self-metrics input → workspace measurement "dk" (not the lab ping).
+      # See docs/runbooks/datakit-emit.md § Extra measurement: dk
       ENV_DEFAULT_ENABLED_INPUTS: "dk"
       ENV_GLOBAL_HOST_TAGS: "lab=truewatch-lab-first-mile,path=datakit"
     ports:

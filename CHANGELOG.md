@@ -17,4 +17,11 @@
 
 ## v0.0.3 — planned (DDTrace → DataKit)
 
-- Implement `EMIT_MODE=ddtrace` against DataKit `ddtrace` receiver
+- `EMIT_MODE=ddtrace`: **StatsD/DogStatsD metric + DDTrace span** (DataKit converts both)
+- See ADR-0003
+
+## v0.0.4 — planned (OpenTelemetry → DataKit)
+
+- `EMIT_MODE=otel`: **OTLP metrics + OTLP traces** (DataKit converts both)
+- Glossary: `docs/observability-glossary.md`
+- See ADR-0003

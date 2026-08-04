@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Unified ingest emitter — select path via --mode or EMIT_MODE.
 
-Modes (ADR-0001 / ADR-0002):
-  dataway  — direct DataWay write (implemented at v0.0.1)
-  datakit  — via local/container DataKit (target v0.0.2)
-  ddtrace  — DDTrace protocol → DataKit (target v0.0.3)
+Modes (ADR-0001 / ADR-0002 / ADR-0003):
+  dataway  — direct DataWay write (v0.0.1)
+  datakit  — via local/container DataKit metrics (v0.0.2)
+  ddtrace  — DDTrace span + StatsD metric → DataKit (target v0.0.3)
+  otel     — OTLP span + OTLP metric → DataKit (target v0.0.4)
 
 Usage:
   set -a && source .env && set +a
@@ -27,6 +28,7 @@ MODE_SCRIPTS = {
     "dataway": "emit_dataway.py",
     "datakit": "emit_datakit.py",
     "ddtrace": "emit_ddtrace.py",
+    "otel": "emit_otel.py",
 }
 
 

@@ -36,6 +36,14 @@ documented and runnable for forkers.
 - Day-1 may still defer Monitor/Dashboard; ingest visibility in Explorer is the
   acceptance bar per path unless a later decision expands scope.
 
+## Addendum — 2026-08-04 (fourth path: OTel; dual signal on APM slices)
+
+Owner accepted **OpenTelemetry (OTLP) → DataKit** as **v0.0.4** (`EMIT_MODE=otel`).
+Additionally, **v0.0.3 (DDTrace) and v0.0.4 (OTel) each must emit protocol-native
+metrics and spans** so DataKit conversion into Metrics + APM is proven. See
+[ADR-0003](0003-otel-trace-path.md). Path 3’s original “trace traffic” wording is
+extended — not replaced — by that dual-signal requirement.
+
 ## Re-check trigger
 
 Revisit if TrueWatch changes DataWay write URLs for `id1`, deprecates the

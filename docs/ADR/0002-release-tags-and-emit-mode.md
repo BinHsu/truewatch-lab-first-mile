@@ -19,7 +19,8 @@ need one entrypoint that selects the push path by flag or environment variable.
 |---|---|
 | **v0.0.1** | DataWay path working (`EMIT_MODE=dataway`); unified `scripts/emit.py`; Compose emitter image; credentials + DataWay runbooks |
 | **v0.0.2** | DataKit path (prefer Compose); `EMIT_MODE=datakit` implemented |
-| **v0.0.3** | DDTrace → DataKit; `EMIT_MODE=ddtrace` implemented |
+| **v0.0.3** | DDTrace → DataKit: **metric (StatsD/DogStatsD) + span**; `EMIT_MODE=ddtrace` ([ADR-0003](0003-otel-trace-path.md)) |
+| **v0.0.4** | OTLP → DataKit: **metric + span**; `EMIT_MODE=otel` ([ADR-0003](0003-otel-trace-path.md)) |
 
 Unfinished modes must print `NOT-IMPLEMENTED` and exit **non-zero** (never fake OK).
 
@@ -36,16 +37,23 @@ Precedence: `--mode` > `EMIT_MODE` > default `dataway`.
 ### Runtime preference
 
 1. **Docker Compose** — default recommendation for a clean host (especially
-   DataKit / DDTrace in later tags).
+   DataKit / DDTrace / OTel in later tags).
 2. **Host `python3`** — allowed for DataWay (stdlib only); useful when Docker is
    absent. This machine tagged v0.0.1 without a local Docker binary; Compose
-   files are still the forker contract.
+   files are still the forker contract. Colima later verified for DataKit.
 
 ## Consequences
 
-- Mode-specific scripts remain: `emit_dataway.py`, stubs for datakit/ddtrace.
+- Mode-specific scripts: `emit_dataway.py`, `emit_datakit.py`, stubs for
+  `ddtrace` / `otel` until their tags.
 - `.env.example` documents `EMIT_MODE`.
 - Later tags supersede stubs without changing the `emit.py` UX.
+
+## Addendum — 2026-08-04
+
+Owner accepted **v0.0.4 OTel** and then required **metric + span** for **both**
+v0.0.3 (DDTrace + StatsD) and v0.0.4 (OTLP traces + OTLP metrics). Canonical
+detail: [ADR-0003](0003-otel-trace-path.md).
 
 ## Re-check trigger
 

@@ -53,7 +53,9 @@ Wait until healthy (`/v1/ping` on 9529). Image pin:
 `pubrepo.truewatch.com/truewatch/datakit:2.7.1`.
 
 Lab compose is **write-API oriented**: `ENV_DEFAULT_ENABLED_INPUTS=dk` only — no
-privileged rootfs mounts. It is not a full host-metrics DataKit.
+privileged rootfs mounts. It is not a full host-metrics DataKit. Enabling `dk`
+means TrueWatch will also receive DataKit **self-metrics** (measurement `dk`);
+see [Extra measurement: `dk`](#extra-measurement-dk-datakit-self-metrics) below.
 
 ### 3. Dry-run emit (no POST)
 
@@ -91,23 +93,85 @@ Local DataKit write URLs do **not** carry the workspace token; DataKit uses
 ### 5. See it in the console (Group B)
 
 1. TrueWatch console → Metrics / Explorer (or Metric Analysis).
-2. Measurement **`truewatch_lab_first_mile`**, tag **`path=datakit`**.
+2. Measurement **`truewatch_lab_first_mile`**, tag **`path=datakit`**, field **`ping`**
+   (default value **`1.0`**, not a large integer).
 3. Widen time range 15–30 minutes if empty.
 4. Still empty → check DataKit logs, `DK_DATAWAY` site match, and step 4 HTTP status.
+
+You will often also see a second measurement named **`dk`**. That is **not** the lab
+emit — see the next section.
+
+Optional OWL check (after Open API key is in `.env`):
+
+```bash
+set -a && source .env && set +a
+export PATH="$HOME/.local/bin:$PATH"
+# Discover measurements (expect truewatch_lab_first_mile and usually dk)
+owl exec owl.metric.list mode=source
+# Confirm lab points (adjust start_time/end_time to 13-digit ms covering the emit)
+owl exec owl.data.query dql_namespace=M \
+  start_time=<ms> end_time=<ms> \
+  query_text="M::truewatch_lab_first_mile:(last(ping), count(ping)) { path = 'datakit' } [6h]"
+```
+
+`[VERIFIED]` 2026-08-04 on id1: two `path=datakit` points with `ping=1` after live
+Compose emit; measurement `dk` present while the container was running.
+
+---
+
+## Extra measurement: `dk` (DataKit self-metrics)
+
+| | Lab emit | DataKit self-metrics |
+|---|---|---|
+| Measurement | `truewatch_lab_first_mile` | **`dk`** |
+| Who writes it | `scripts/emit_datakit.py` → `:9529/v1/write/…` | DataKit built-in **`dk` input** |
+| Why it appears | You ran emit | Compose sets `ENV_DEFAULT_ENABLED_INPUTS=dk` |
+| Typical fields | `ping` (float, default `1.0`) | Many `datakit_*` fields (CPU, mem, HTTP API, DataWay client, …) |
+| Distinguishing tags on lab points | `path=datakit`, `service=lab-emitter` | N/A for lab series |
+
+**Do not confuse** tag `__input_source=dk.http_api` on the lab series with
+measurement `dk`. That tag only means the point entered TrueWatch **through
+DataKit’s HTTP write API**; the measurement name is still
+`truewatch_lab_first_mile`.
+
+**Contrast with DataWay path:** direct `EMIT_MODE=dataway` does **not** create
+measurement `dk`, because no DataKit process is running.
+
+**Why keep `dk` enabled in this lab:** useful when triage-ing “local 2xx but
+nothing upstream” (DataWay dial / HTTP API counters). To silence self-metrics,
+set `ENV_DEFAULT_ENABLED_INPUTS` to empty (or remove `dk`) in
+`docker-compose.yml` and recreate the container — then only your writes (and any
+other inputs you enable) remain.
+
+Example self-metric field names (non-exhaustive; discover live with
+`owl exec owl.metric.list mode=field source=dk`):
+`datakit_cpu_usage`, `datakit_golang_mem_usage`, `datakit_http_api_total`,
+`datakit_dataway_*`. Large integers in the Metrics UI are often these fields,
+not `ping`.
 
 ---
 
 ## What gets sent
 
+### Lab emitter (what this runbook proves)
+
 | Field | Value |
 |---|---|
 | Measurement | `truewatch_lab_first_mile` |
-| Tags | `path=datakit`, `service=lab-emitter`, `env=lab` |
+| Tags | `path=datakit`, `service=lab-emitter`, `env=lab` (DataKit may add `host`, `lab`, `__input_source`, …) |
 | Field | `ping=<float>` (default `1.0`) |
 | Local endpoint | `${DATAKIT_URL}/v1/write/metric` (default host `http://127.0.0.1:9529`) |
 | Upstream | DataKit → `ENV_DATAWAY` (`DK_DATAWAY`) |
 
 Synthetic demo data only.
+
+### Side effect while DataKit is up
+
+| Field | Value |
+|---|---|
+| Measurement | `dk` |
+| Source | Built-in input enabled by `ENV_DEFAULT_ENABLED_INPUTS=dk` |
+| Purpose | DataKit process / pipeline health — **not** the lab `ping` series |
 
 ---
 
@@ -128,8 +192,10 @@ Synthetic demo data only.
 | `Cannot reach DataKit` | Container not up, wrong `DATAKIT_URL`, or port 9529 not published |
 | Compose: `DK_DATAWAY` unset | Fill `.env` per credentials §5; use `--profile datakit` |
 | Local 2xx but nothing in Explorer | Bad/mismatched `DK_DATAWAY` site/token; check DataKit monitor/logs |
+| Console shows large numbers (e.g. tens of thousands) but no `ping=1` | Likely viewing measurement **`dk`** / a `datakit_*` field — switch to `truewatch_lab_first_mile` + field `ping` + tag `path=datakit` |
 | Healthcheck failing | Image pull / start_period; `docker compose … logs datakit` |
 | Still `NOT-IMPLEMENTED` | Old checkout — need `scripts/emit_datakit.py` from v0.0.2+ |
+| DataKit DEBUG logs show full DataWay URL | Token may appear in `/var/log/datakit/log` or `docker compose logs` — redact before sharing; logs live in the container writable layer unless you mount a volume |
 
 ---
 
