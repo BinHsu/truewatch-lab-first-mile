@@ -32,7 +32,7 @@ Repo bootstrapped as a public GitHub project from the aegis template. TrueWatch 
 | Commit | Content |
 |---|---|
 | `c838e64` | Initial commit (from `BinHsu/aegis-template`) |
-| *(pending)* | Sync OWL docs + fill project placeholders + this handoff |
+| `7eaacf5` | Sync OWL docs + fill project placeholders + this handoff |
 
 ## 3. Repository state
 
