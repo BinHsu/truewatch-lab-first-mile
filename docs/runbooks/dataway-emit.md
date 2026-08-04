@@ -106,10 +106,7 @@ Synthetic demo data only — no customer payloads.
 
 ## Next after this path works
 
-Release plan ([ADR-0002](../ADR/0002-release-tags-and-emit-mode.md)):
+- DataKit path: [`datakit-emit.md`](datakit-emit.md) (`EMIT_MODE=datakit`, v0.0.2)
+- DDTrace path: still stub until **v0.0.3** (`NOT-IMPLEMENTED`, exit 2)
 
-- **v0.0.2** — `EMIT_MODE=datakit`
-- **v0.0.3** — `EMIT_MODE=ddtrace`
-
-Until then those modes print `NOT-IMPLEMENTED` and exit 2. Status:
-`docs/handoff/CURRENT.md`.
+Status: `docs/handoff/CURRENT.md`.

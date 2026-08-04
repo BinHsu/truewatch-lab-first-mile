@@ -11,10 +11,11 @@ Engineering security scaffold). Workload code is not written yet — start from
 
 1. `docs/handoff/CURRENT.md` — status and next safe action (no chat history required)
 2. [`docs/runbooks/owl-cli-credentials.md`](docs/runbooks/owl-cli-credentials.md) — console → `.env` (OWL §3–4, ingest Workspace Token/DataWay **§5**, OWL CLI **§6**)
-3. [`docs/runbooks/dataway-emit.md`](docs/runbooks/dataway-emit.md) — first ingest slice: DataWay synthetic metric
-4. `docs/truewatch-owl.md` — OWL / MCP / CLI product rules for this lab
-5. `AGENTS.md` — operating contract for every agent and human
-6. Copy `.env.example` → `.env` locally (never commit `.env`)
+3. [`docs/runbooks/dataway-emit.md`](docs/runbooks/dataway-emit.md) — DataWay synthetic metric (v0.0.1)
+4. [`docs/runbooks/datakit-emit.md`](docs/runbooks/datakit-emit.md) — DataKit via Compose `:9529` (v0.0.2)
+5. `docs/truewatch-owl.md` — OWL / MCP / CLI product rules for this lab
+6. `AGENTS.md` — operating contract for every agent and human
+7. Copy `.env.example` → `.env` locally (never commit `.env`)
 
 ```bash
 git config core.hooksPath .githooks   # if not already set after clone
@@ -34,6 +35,9 @@ Credential and CLI steps live in the runbook (not duplicated here).
 ```bash
 set -a && source .env && set +a
 python3 scripts/emit.py --mode dataway          # or: docker compose --env-file .env run --rm emit
+# DataKit (needs Compose profile datakit — see docs/runbooks/datakit-emit.md):
+# docker compose --profile datakit --env-file .env up -d datakit
+# DATAKIT_URL=http://127.0.0.1:9529 python3 scripts/emit.py --mode datakit
 ```
 
 ## Security harness (inherited)

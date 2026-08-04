@@ -1,11 +1,46 @@
 # Prefer Compose for a clean lab host (ADR-0002).
-# DataWay emit (v0.0.1):
-#   docker compose --env-file .env run --rm emit
-#   docker compose --env-file .env run --rm -e EMIT_MODE=dataway emit --dry-run
 #
-# DataKit / DDTrace services land in v0.0.2 / v0.0.3 (not in this release).
+# DataWay only (v0.0.1 — no DataKit container):
+#   docker compose --env-file .env run --rm emit --mode dataway --dry-run
+#
+# DataKit path (v0.0.2 — profile "datakit"):
+#   docker compose --profile datakit --env-file .env up -d datakit
+#   docker compose --env-file .env run --rm -e EMIT_MODE=datakit emit
+#   # or: … emit --mode datakit --also-log
+#
+# Requires .env with DK_DATAWAY for the datakit profile
+# (owl-cli-credentials §5). Never commit .env.
+#
+# Image: https://docs.truewatch.com/datakit/datakit-docker-deploy/
+# Write API: https://docs.truewatch.com/datakit/apis/
 
 services:
+  datakit:
+    profiles: ["datakit"]
+    image: pubrepo.truewatch.com/truewatch/datakit:2.7.1
+    hostname: lab-datakit
+    working_dir: /usr/local/datakit
+    environment:
+      # Upstream to TrueWatch — same value as host-install DK_DATAWAY
+      ENV_DATAWAY: ${DK_DATAWAY:?set DK_DATAWAY in .env (runbook owl-cli-credentials §5)}
+      ENV_HTTP_LISTEN: "0.0.0.0:9529"
+      # Lab: HTTP write sink only — no host/container collectors / rootfs mounts
+      ENV_DEFAULT_ENABLED_INPUTS: "dk"
+      ENV_GLOBAL_HOST_TAGS: "lab=truewatch-lab-first-mile,path=datakit"
+    ports:
+      - "9529:9529"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q -O /dev/null http://127.0.0.1:9529/v1/ping || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+
   emit:
     build:
       context: .
@@ -14,4 +49,7 @@ services:
       - .env
     environment:
       EMIT_MODE: ${EMIT_MODE:-dataway}
-    # Pass-through args after service name, e.g. run --rm emit --also-log
+      # Reach Compose service name when datakit profile is up; host default is
+      # http://127.0.0.1:9529 (scripts/emit_datakit.py) if DATAKIT_URL unset.
+      DATAKIT_URL: ${DATAKIT_URL:-http://datakit:9529}
+    # Pass-through args, e.g. run --rm emit --mode datakit --dry-run
