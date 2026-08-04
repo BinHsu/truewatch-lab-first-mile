@@ -8,9 +8,19 @@
 > do the thing. Then update with the result. A post-hoc-only handoff is worthless precisely when it
 > is needed. See `AGENTS.md` §4.
 
-**Last updated:** 2026-08-04 — Owner: v0.0.3/v0.0.4 each prove **metric + span** in
-protocol-native formats (ADR-0003). Glossary + OTel stub already in tree. Still:
-tag `v0.0.2` pending; then implement DDTrace dual-signal, then OTel dual-signal.
+**Last updated:** 2026-08-04 — About to cut annotated tag **`v0.0.2`** on `main` (DataKit
+live HTTP 200 `[VERIFIED]`). Exact command after this commit:
+
+```bash
+git tag -a v0.0.2 -m "v0.0.2 DataKit emit via Compose"
+git push origin v0.0.2
+gh release create v0.0.2 --title "v0.0.2 — DataKit ingest" --notes-file - <<'EOF'
+…
+EOF
+```
+
+If the session dies after push of this commit but before the tag: run the commands
+above on the release commit SHA recorded in the next handoff update.
 
 ---
 
