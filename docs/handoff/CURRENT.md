@@ -8,7 +8,7 @@
 > do the thing. Then update with the result. A post-hoc-only handoff is worthless precisely when it
 > is needed. See `AGENTS.md` §4.
 
-**Last updated:** 2026-08-04 — releasing **v0.0.1** (DataWay + unified `EMIT_MODE`); next slice v0.0.2 DataKit
+**Last updated:** 2026-08-04 — **v0.0.1 released** (`6be3e7f`, GitHub release); next slice v0.0.2 DataKit
 
 ---
 
@@ -30,7 +30,7 @@ Compose emitter image files, credentials + DataWay runbooks, ADR-0001/0002.
 
 | Tag / commit | Content |
 |---|---|
-| `v0.0.1` | DataWay release (this cut) |
+| `v0.0.1` / `6be3e7f` | DataWay release — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.1 |
 | *(planned)* `v0.0.2` | DataKit |
 | *(planned)* `v0.0.3` | DDTrace → DataKit |
 
