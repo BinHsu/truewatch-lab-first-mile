@@ -8,11 +8,15 @@ commits, or this file.
 
 ## Credential names (do not mix)
 
-| Lab use | What it is | Console (this trial) | Typical shape |
+| Lab use | What it is | Console path | Typical shape |
 |---|---|---|---|
-| OWL / Open API | API Key Secret | **Management → Client Tokens** (docs often say API Key Management) `[VERIFIED]` | opaque hex / secret string |
+| OWL / Open API | **API Key Secret** (`DF-API-KEY`) | **Management → API Key Management** ([docs](https://docs.truewatch.com/management/api-key/)) | Key (Secret) from API Key details — **not** Key ID |
 | DataKit + DataWay write | **Workspace Token** | **Management → Workspace Settings → Token** | usually starts with `tkn_` |
-| RUM Public DataWay only | RUM Client Token | Client Token Management (RUM docs) | different product; **not** used for ADR-0001 DataKit/DataWay emitters |
+| RUM Public DataWay only | RUM **Client Token** | **Management → Client Tokens** ([docs](https://docs.truewatch.com/management/client-token/)) | hex-like; **cannot** call Open API / OWL |
+
+**Gotcha `[VERIFIED]` 2026-08-04:** creating `lab-first-mile-owl` under **Client Tokens** produced a RUM Client Token. DataWay ingest still worked (Workspace Token). `owl exec` / Open API returned `401 ft.InvalidAPIKey`. OWL needs an **API Key Secret**, not a Client Token.
+
+**Working paths `[VERIFIED]` 2026-08-04:** **Management → API Key Management**, or account menu **Personal API Key** — put the Secret in `OWL_TOKEN` / `OWL_API_KEY` / `TRUEWATCH_API_KEY`. Then `owl workspace list` succeeds.
 
 OWL rules: [`docs/truewatch-owl.md`](../truewatch-owl.md).  
 Status: [`docs/handoff/CURRENT.md`](../handoff/CURRENT.md).
@@ -64,23 +68,32 @@ OWL_INSTALL_BASE_URL=https://static.truewatch.com/owl
 
 ---
 
-## 3. Create the Client Token (API Key Secret)
+## 3. Create the Open API Key (for OWL)
 
-Requires Administrator or Owner on the workspace.
+Requires Administrator or Owner. Official path:
+[API Keys Management](https://docs.truewatch.com/management/api-key/).
 
-1. Console → **Management → Client Tokens**.
-2. Upper right → **Create**.
+1. Console → left nav **Management → API Key Management**  
+   (UI may say **API Keys**. **Do not** use **Client Tokens** — that is RUM-only.)
+2. Upper right → **Create Key**.
 3. Suggested fields:
-   - **Name:** `lab-first-mile-owl`
-   - **Role:** read-capable role for the workspace (least privilege; widen later if you need monitor/dashboard writes)
-   - **Note / remark:** `truewatch-lab-first-mile local OWL CLI`
+   - **Name:** `lab-first-mile-owl-openapi`
+   - **Role:** read-capable workspace role (widen later for monitor/dashboard writes)
+   - **Note:** `truewatch-lab-first-mile OWL CLI / Open API`
 4. Confirm / save.
-5. Open the new token’s detail page.
-6. Copy **Key (Secret)** — the auth credential.
-   - Use the Secret, not the Key ID.
-   - This is what Open API / OWL call `DF-API-KEY`.
+5. Open key details → copy **Key (Secret)** only (not Key ID).
+6. This Secret is `DF-API-KEY` for Open API and `OWL_TOKEN` / `OWL_API_KEY`.
 
-If your console still shows **API Key Management** instead of **Client Tokens**, use that menu; the rest of the flow is the same.
+If you only see **Client Tokens** and no **API Key Management**, search Management
+for “API Key”, or use an Owner account — some roles may not see that menu.
+
+Verify after updating `.env` (no secrets in chat):
+
+```bash
+set -a && source .env && set +a
+export PATH="$HOME/.local/bin:$PATH"
+owl workspace list    # must NOT return ft.InvalidAPIKey
+```
 
 ---
 
@@ -140,8 +153,8 @@ Docs: [Workspace Settings / Token](https://docs.truewatch.com/management/setting
 
 **Permission blocked** (seen on this lab’s trial UI, 2026-08-04): if Token is
 masked and a tooltip says you do not have permission to view Token content,
-your console role cannot read it. OWL Client Tokens (§3) are a different
-credential and **cannot** substitute here.
+your console role cannot read it. The Open API Key (§3) and RUM Client Token
+are different credentials and **cannot** substitute for Workspace Token.
 
 Unblock options (owner of the workspace):
 
@@ -153,8 +166,8 @@ Unblock options (owner of the workspace):
    Token and shares it securely once (not via public chat/git).
 
 Do **not** use:
-- the OWL / Client Tokens **API Key Secret** from §3, or
-- a RUM **Client Token** from RUM Client Token Management.
+- the Open API Key Secret from §3, or
+- a RUM **Client Token** from **Management → Client Tokens**.
 
 ### Step W3 — get the DataWay URL for your site
 

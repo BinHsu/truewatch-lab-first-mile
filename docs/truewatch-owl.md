@@ -53,8 +53,9 @@ If docs disagree, prefer OWL Quick Start / MCP Tools Reference over `/mcp-server
 Step-by-step console → `.env` → `owl sync`:
 [`docs/runbooks/owl-cli-credentials.md`](runbooks/owl-cli-credentials.md).
 
-On the PDSA trial console used for this lab, the Open API credential menu is
-**Management → Client Tokens** (official docs still say API Key Management).
+OWL / Open API needs **Management → API Key Management** (Key Secret →
+`OWL_TOKEN`). **Management → Client Tokens** is RUM-only and returns
+`401 ft.InvalidAPIKey` if used with OWL `[VERIFIED]` 2026-08-04.
 
 ## Working rules for this lab
 

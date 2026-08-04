@@ -8,7 +8,7 @@
 > do the thing. Then update with the result. A post-hoc-only handoff is worthless precisely when it
 > is needed. See `AGENTS.md` §4.
 
-**Last updated:** 2026-08-04 — **v0.0.1 released** (`6be3e7f`, GitHub release); next slice v0.0.2 DataKit
+**Last updated:** 2026-08-04 — OWL Open API key fixed (`owl workspace list` OK); next slice v0.0.2 DataKit
 
 ---
 
@@ -44,7 +44,8 @@ Compose emitter image files, credentials + DataWay runbooks, ADR-0001/0002.
 ## 4. Environment / system state
 
 - Site **id1**; local `.env` has OWL + Workspace Token + DataWay (gitignored).
-- OWL CLI v1.1.1; `owl sync` OK.
+- OWL CLI v1.1.1; Open API key in `.env` (not RUM Client Token); `owl workspace list` OK
+  `[VERIFIED]` 2026-08-04 (owner: Personal API Key / API Key Secret → `OWL_TOKEN`).
 - Host Docker: **not installed** on the machine that cut v0.0.1 — Compose files are the forker
   contract; host `python3 scripts/emit.py` is the verified path here.
 - DataKit: not installed.
@@ -57,12 +58,15 @@ python3 scripts/emit.py --mode dataway --dry-run
 python3 scripts/emit_dataway.py   # earlier: metric_http_status=200 after UA fix
 python3 scripts/emit.py --mode datakit   # → NOT-IMPLEMENTED exit 2
 python3 scripts/emit.py --mode ddtrace   # → NOT-IMPLEMENTED exit 2
+owl workspace list                # OK after Open API key (was 401 with Client Token)
 ```
 
 ## 6. Test results
 
 - DataWay POST metric/logging: **pass** `[VERIFIED]` HTTP 200 (lab User-Agent; CF 1010 on Python-urllib).
 - Unified dispatcher + stubs: **pass** `[VERIFIED]` (datakit/ddtrace exit 2).
+- OWL Open API auth: **pass** `[VERIFIED]` `owl workspace list` after replacing Client Token with
+  API Key Secret / Personal API Key in `OWL_TOKEN` (Workspace Token unchanged).
 - Compose build: **not run** (no Docker on this host) `[UNVERIFIED]`.
 - Explorer UI sighting: **owner Group B** `[UNVERIFIED]`.
 
@@ -70,7 +74,7 @@ python3 scripts/emit.py --mode ddtrace   # → NOT-IMPLEMENTED exit 2
 
 1. Implement **v0.0.2** DataKit (Compose preferred).
 2. Then **v0.0.3** DDTrace → DataKit.
-3. Optional: owner confirms Explorer visibility; OWL MCP in Cursor; Monitor/Dashboard scope.
+3. Optional: OWL MCP in Cursor; Monitor/Dashboard scope.
 
 ## 8. AWAITING DECISION — owner only
 
@@ -94,5 +98,7 @@ ls docs/ADR/0002-release-tags-and-emit-mode.md docker-compose.yml
 ## 10. Things that will bite you
 
 - Cloudflare **1010** if User-Agent is `Python-urllib/*` against id1-openway.
+- **Management → Client Tokens** is RUM-only; OWL needs API Key Secret → `OWL_TOKEN`
+  (`401 ft.InvalidAPIKey` if mixed up).
 - Do not treat datakit/ddtrace stubs as green — they must stay non-zero until implemented.
 - Never commit `.env`.
