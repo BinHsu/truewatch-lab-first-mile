@@ -1,0 +1,67 @@
+# tools/registry.yaml — Practice 7 (Tool Safety): single source of truth for callable tools.
+# An agent may only call tools listed here. New tool = PR to this file first.
+# Each entry declares: type, timeout, concurrency, lock, approval gate, audit.
+# A tool-runner wrapper enforces: approval gate → circuit breaker → mutex →
+# timeout → audit log → reset-on-success (see README "Practice 7").
+#
+# SEED CONTENT — the entries below are examples covering common shapes (read-only,
+# write-with-mutex, always-approved, conditionally-destructive). DELETE the ones your
+# project does not call. A registry full of tools nobody invokes audits clean forever
+# and proves nothing: AGENTS.md section 12.
+
+tools:
+  - name: read_file
+    type: read-only
+    timeout_ms: 5000
+    concurrency: unlimited
+
+  - name: grep
+    type: read-only
+    timeout_ms: 10000
+    concurrency: unlimited
+
+  - name: edit_file
+    type: write
+    timeout_ms: 30000
+    concurrency: 1                 # mutex
+    lock_key: "file:{path}"        # per-file lock
+    requires_approval: false
+    audit_log: true
+
+  - name: git_commit
+    type: write
+    timeout_ms: 30000
+    concurrency: 1
+    lock_key: "git:{repo}"
+    audit_log: true
+
+  - name: git_push_force
+    type: destructive
+    timeout_ms: 60000
+    concurrency: 1
+    lock_key: "git:{repo}"
+    requires_approval: true        # always human-approved
+    audit_log: true
+
+  - name: db_query
+    type: read-only-or-write       # decided by query content
+    timeout_ms: 10000
+    concurrency: 5                 # connection-pool cap
+    requires_approval_if: "matches(/^(DROP|TRUNCATE|DELETE|UPDATE)/i)"
+    audit_log: true
+
+  - name: kubectl
+    type: destructive              # delete/apply variants
+    timeout_ms: 60000
+    concurrency: 1
+    lock_key: "k8s:{context}"
+    requires_approval_if: "matches(/\\b(delete|apply|drain)\\b/)"
+    audit_log: true
+
+  - name: terraform
+    type: destructive
+    timeout_ms: 120000
+    concurrency: 1
+    lock_key: "tf:{workspace}"
+    requires_approval_if: "matches(/\\b(apply|destroy)\\b/)"
+    audit_log: true

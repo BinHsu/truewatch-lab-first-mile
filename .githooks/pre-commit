@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# pre-commit — Practice 3/4: block hardcoded secrets + .env files before they land.
+# Enable once per clone:  git config core.hooksPath .githooks
+set -euo pipefail
+
+fail=0
+
+# 1. Block .env files being committed
+if git diff --cached --name-only | grep -E '\.env(\.local|\.production|\.staging)?$' | grep -vE '\.example$'; then
+  echo "❌ .env file staged — move secrets to env/secrets manager (SECURITY.md §1)"
+  fail=1
+fi
+
+# 2. Block obvious hardcoded secrets in the staged diff
+if git diff --cached -U0 | grep -E '^\+' \
+   | grep -EI '(api[_-]?key|secret|token|password)\s*[:=]\s*["'"'"'][a-zA-Z0-9]{16,}|AKIA[0-9A-Z]{16}|ghp_[a-zA-Z0-9]{36}|sk-ant-[a-zA-Z0-9-]{90,}'; then
+  echo "❌ possible hardcoded secret in staged changes (SECURITY.md §1)"
+  fail=1
+fi
+
+# 3. Run the cleanup scanner if present
+if [ -f scripts/cleanup-scanner.py ]; then
+  python3 scripts/cleanup-scanner.py || fail=1
+fi
+
+[ "$fail" -eq 0 ] && echo "✅ pre-commit security checks passed"
+exit "$fail"

@@ -1,0 +1,110 @@
+{
+  "format_version": 1,
+  "_comment": [
+    "Machine-readable list of the evidence artifacts each phase must produce.",
+    "How to write the criteria behind them: docs/design/acceptance-criteria.md.",
+    "Validator: tests/test_evidence_artifacts.py. Keep this file and the plan in step;",
+    "this file wins, because it is the one a machine reads.",
+    "This file lists what MUST exist. It never states which phase is current -- that is",
+    "docs/handoff/CURRENT.md only (AGENTS.md section 3).",
+    "SEED CONTENT: the 'example' phase below is a worked illustration. Replace it with",
+    "your project's phases. Leaving it in place costs nothing -- the default run passes",
+    "vacuously -- but it gates nothing either."
+  ],
+
+  "artifact_dir": "docs/validation/evidence",
+
+  "required_fields": [
+    "artifact_id",
+    "phase",
+    "date",
+    "method",
+    "evidence_tag",
+    "result"
+  ],
+  "optional_fields": [
+    "commit",
+    "source_sha256",
+    "stopped_at",
+    "notes"
+  ],
+
+  "allowed_tags": [
+    "VERIFIED",
+    "CROSS-CHECKED",
+    "INFERRED",
+    "BLOCKED",
+    "COMMUNITY",
+    "NO-EVIDENCE-FOUND",
+    "UNVERIFIED"
+  ],
+  "passing_tags": [
+    "VERIFIED",
+    "CROSS-CHECKED"
+  ],
+  "allowed_results": [
+    "pass",
+    "fail",
+    "blocked"
+  ],
+
+  "_forbidden_comment": [
+    "Secrets and machine-specific values, rejected anywhere in an artifact including its",
+    "header. This is a backstop, not your first line -- redact before saving.",
+    "Each entry is [what it is, regex]."
+  ],
+  "global_forbidden_patterns": [
+    ["a private key", "-----BEGIN [A-Z ]*PRIVATE KEY-----"],
+    ["an AWS access key id", "AKIA[0-9A-Z]{16}"],
+    ["a GitHub token", "gh[pousr]_[A-Za-z0-9]{20,}"],
+    ["a bearer token", "(?i)\\bauthorization\\s*[:=]\\s*bearer\\s+\\S"],
+    ["a password or passphrase value", "(?i)\\b(password|passphrase|psk)\\s*[:=]\\s*\\S"],
+    ["a network name value", "(?i)\\bssid\\s*[:=]\\s*\\S"],
+    ["a MAC address", "\\b([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}\\b"],
+    ["a local device node name", "/dev/(cu|tty)[A-Za-z0-9._-]+"],
+    ["an absolute local path", "(/Users/|/Volumes/|/home/[a-z])"]
+  ],
+
+  "_phases_comment": [
+    "phase -> list of artifacts. Per-artifact keys:",
+    "  file             required, the filename under artifact_dir",
+    "  id, title        required, for human-readable gate failures",
+    "  optional         true = never blocks a gate",
+    "  implies          if this artifact exists, these must exist too",
+    "  requires_fields  extra header fields this artifact must carry",
+    "  min_body_lines   minimum non-blank body lines",
+    "  must_contain     regexes the body must match",
+    "  must_not_contain regexes the body must not match"
+  ],
+  "phases": {
+    "example": [
+      {
+        "id": "EX-B1",
+        "file": "EX-B1-example-observation.md",
+        "title": "Example: an observation only a person or an instrument can make",
+        "min_body_lines": 2,
+        "must_contain": ["(?i)observed"]
+      },
+      {
+        "id": "EX-B2",
+        "file": "EX-B2-example-under-load.md",
+        "title": "Example: the same observation repeated under load",
+        "requires_fields": ["commit"],
+        "min_body_lines": 2
+      },
+      {
+        "id": "EX-OPT1",
+        "file": "EX-OPT1-example-detour.md",
+        "title": "Example: a reversible detour that must be undone before the gate closes",
+        "optional": true,
+        "implies": ["EX-OPT2-example-detour-reverted.md"]
+      },
+      {
+        "id": "EX-OPT2",
+        "file": "EX-OPT2-example-detour-reverted.md",
+        "title": "Example: proof the detour was reverted",
+        "optional": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,56 @@
+# .semgrep/sql-injection.yml — Practice 4 (Review-Feedback Promotion).
+# Example of a recurring review comment promoted to an automated check:
+#   "use a parameterized query here, not string concat" → these rules.
+# Add a new rule each time the same security comment appears 3× in PR reviews.
+# Run: semgrep --config .semgrep/ --error   (wired into CI)
+#
+# SEED CONTENT — retarget or delete per project. A rule scoped to languages the repo does
+# not contain reports zero findings forever and reads as a pass (AGENTS.md section 12).
+# No database? Delete the SQL rules rather than leaving them to audit clean.
+#
+# Declare each pattern only under languages that can parse it. A Python f-string pattern
+# listed under `go` is a rule parse error: semgrep exits 2, the rule never runs, and
+# depending on how the step is wired that either goes red for the wrong reason or is
+# swallowed. Same defect class as a stub that reports a pass.
+rules:
+  - id: raw-sql-string-concat-python
+    languages: [python]
+    severity: ERROR
+    message: >
+      Build SQL with parameterized statements, not string concatenation /
+      interpolation. See SECURITY.md §2.
+    pattern-either:
+      - pattern: $CUR.execute("..." % $X)
+      - pattern: $CUR.execute("..." + $X)
+      - pattern: $CUR.execute(f"...{$X}...")
+
+  - id: raw-sql-string-concat-js
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >
+      Build SQL with parameterized statements, not string concatenation /
+      interpolation. See SECURITY.md §2.
+    pattern-either:
+      - pattern: $DB.query("..." + $X)
+      - pattern: $DB.query(`...${$X}...`)
+
+  - id: shell-exec-with-interpolation-python
+    languages: [python]
+    severity: ERROR
+    message: >
+      Do not pass interpolated/concatenated input into a shell. Use argument
+      arrays / proper escaping. See SECURITY.md §2.
+    pattern-either:
+      - pattern: os.system(f"...{$X}...")
+      - pattern: os.system("..." + $X)
+      - pattern: subprocess.$F(f"...{$X}...", shell=True)
+
+  - id: shell-exec-with-interpolation-js
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >
+      Do not pass interpolated/concatenated input into a shell. Use argument
+      arrays / proper escaping. See SECURITY.md §2.
+    pattern-either:
+      - pattern: child_process.exec(`...${$X}...`)
+      - pattern: child_process.exec("..." + $X)

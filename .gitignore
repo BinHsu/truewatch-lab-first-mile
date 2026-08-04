@@ -1,0 +1,53 @@
+# ─── Confidential — never commit ─────────────────────────────
+# Operator-local agent notes / personal overrides
+CLAUDE.local.md
+.agent-context/
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+!*.crt.example
+.aws/
+credentials
+
+# WireGuard / PKI key material
+wireguard/*.conf
+wireguard/keys/
+wireguard/config/
+pki/
+
+# ─── Terraform ────────────────────────────────────────────────
+**/.terraform/
+**/.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+*.tfplan
+crash.log
+
+# ─── Build / language artifacts ───────────────────────────────
+node_modules/
+vendor/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+/bin/
+*.exe
+*.dll
+*.so
+*.test
+*.out
+
+# ─── Tooling / IDE / OS ───────────────────────────────────────
+.claude/settings.local.json
+.vscode/
+.idea/
+*.swp
+.DS_Store
+*.log

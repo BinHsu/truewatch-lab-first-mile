@@ -1,0 +1,81 @@
+name: Security Checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * *"   # daily baseline run
+
+# Every step below must be able to fail. A step that cannot go red is not a check —
+# see AGENTS.md section 12. Where a step genuinely cannot run, it says SKIPPED and names
+# what was missing, rather than passing quietly.
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # ── Practice 5: secret-residue scan (real, runnable) ──
+      - name: Cleanup scanner (secrets / .env residue)
+        run: python3 scripts/cleanup-scanner.py
+
+      # ── Practice 4: promoted pattern checks (semgrep) ──
+      # Run the CLI, not returntocorp/semgrep-action@v1. That wrapper action is deprecated
+      # by its own README, which points at native semgrep instead; its last commit was in
+      # January 2024. A deprecated pin keeps working until it does not, and its failure
+      # mode is a step that stops asserting rather than a red build.
+      # Note: these rules only fire on languages present in the repo. Rules scoped to
+      # languages you do not use will report clean forever. Retarget or delete them.
+      - name: Semgrep (promoted review rules)
+        run: |
+          python3 -m pip install --quiet semgrep
+          semgrep --config .semgrep/ --error --quiet
+
+      # ── Practice 7: tool-registry audit ──
+      - name: Tool-registry audit
+        run: |
+          if ! command -v yq >/dev/null 2>&1; then
+            echo "::warning::SKIPPED tool-registry audit — yq not on PATH. This check did NOT run."
+            exit 0
+          fi
+          if [ ! -f tools/registry.yaml ]; then
+            echo "::warning::SKIPPED tool-registry audit — tools/registry.yaml absent. This check did NOT run."
+            exit 0
+          fi
+          bash scripts/audit-tool-registry.sh
+
+      # ── Practice 5: security benchmark ──
+      # Reports NOT-IMPLEMENTED for unwired benchmarks and never counts them as passes.
+      # Once the suite is wired, add --require-implemented so stubs turn the build red.
+      - name: Security benchmark
+        run: python3 scripts/security-benchmark.py
+
+      # ── Evidence artifacts: the record of every Group B verification ──
+      # Prove the validator can still fail, then run it. Without the self-test, a broken
+      # validator reports the same green as a clean repo.
+      - name: Evidence validator self-test
+        run: python3 tests/test_evidence_artifacts.py --self-test
+
+      - name: Evidence artifacts well-formed
+        run: python3 tests/test_evidence_artifacts.py
+
+      # Phase gates. Uncomment and name a phase once it is defined in REQUIRED.json.
+      # - run: python3 tests/test_evidence_artifacts.py --require {{PHASE}}
+
+      # ── Dependency audit — wire per stack (uncomment the matching one) ──
+      # - run: npm audit --audit-level=high
+      # - run: pip-audit --strict
+      # - run: cargo audit --deny warnings
+      # - run: govulncheck ./...
+
+      # ── Lint with security rules — wire per stack ──
+      # - run: npm run lint
+      # - run: ruff check . && mypy .
+      # - run: golangci-lint run
