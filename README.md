@@ -83,20 +83,28 @@ Decisions: [ADR-0001](docs/ADR/0001-three-ingest-paths.md), [ADR-0002](docs/ADR/
 # Portable contract tests (Docker; no host pip)
 bash scripts/run-emit-payload-tests.sh
 
-# v0.0.1 DataWay (host or Compose)
+# Load credentials (never commit .env)
 set -a && source .env && set +a
-python3 scripts/emit.py --mode dataway --dry-run
-docker compose --env-file .env run --rm --no-deps emit --mode dataway --dry-run
 
-# DataKit required for datakit / ddtrace / otel
+# --dry-run: print assembled URL/payloads only (no POST / no UDP).
+# Works for all four modes: dataway | datakit | ddtrace | otel
+#   … emit --mode dataway --dry-run
+#   … emit --mode datakit --dry-run
+#   … -e EMIT_MODE=ddtrace emit --dry-run
+#   … -e EMIT_MODE=otel emit --dry-run
+
+# Live verify — DataWay (no DataKit container)
+python3 scripts/emit.py --mode dataway
+docker compose --env-file .env run --rm --no-deps emit --mode dataway
+
+# Live verify — DataKit / DDTrace / OTel (start DataKit first)
 docker compose --profile datakit --env-file .env up -d datakit
 docker compose --env-file .env build emit
-
 docker compose --env-file .env run --rm -e EMIT_MODE=datakit emit
 docker compose --env-file .env run --rm -e EMIT_MODE=ddtrace emit
 docker compose --env-file .env run --rm -e EMIT_MODE=otel emit
 
-# Console-friendly: two metric points ≥5s apart
+# Console-friendly: two metric points ≥5s apart (any mode; example otel)
 docker compose --env-file .env run --rm -e EMIT_MODE=otel emit --count 2
 ```
 
