@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.1.1 — 2026-08-05 (Docs close-out)
+
+Forker-facing close-out after v0.1.0:
+
+- README: four-path ingest flow, live verify cmds, `--dry-run` for all modes
+- Docs prefer **`EMIT_MODE`** (Compose/cloud-style); optional `--mode` remains in code
+- DataWay skips DataKit by omitting `--profile datakit` (no `--no-deps` as “no DataKit”)
+- ADR-0002 addenda for EMIT_MODE-first documentation
+
 ## v0.1.0 — 2026-08-05 (First-mile lab checkpoint)
 
 Lab summary tag: all four ingest paths are shipped (v0.0.1–v0.0.4), plus portable

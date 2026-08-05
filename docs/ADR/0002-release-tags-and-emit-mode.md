@@ -22,6 +22,7 @@ need one entrypoint that selects the push path by flag or environment variable.
 | **v0.0.3** | DDTrace → DataKit: **metric (StatsD/DogStatsD) + span**; `EMIT_MODE=ddtrace` ([ADR-0003](0003-otel-trace-path.md)) |
 | **v0.0.4** | OTLP → DataKit: **metric + span**; `EMIT_MODE=otel` ([ADR-0003](0003-otel-trace-path.md)) |
 | **v0.1.0** | Lab checkpoint: v0.0.1–v0.0.4 paths + portable payload UT in Docker + CI |
+| **v0.1.1** | Docs close-out: forker README flow, `EMIT_MODE`-first examples |
 
 Unfinished modes must print `NOT-IMPLEMENTED` and exit **non-zero** (never fake OK).
 

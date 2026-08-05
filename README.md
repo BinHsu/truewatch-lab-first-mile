@@ -4,8 +4,8 @@ Public **PDSA lab**: prove a synthetic **first-mile** loop into TrueWatch —
 
 **emit → DataKit and/or DataWay → Metrics / APM (Explorer or OWL) → optional alert/dashboard.**
 
-Checkpoint tag: **[v0.1.0](https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.1.0)**  
-(four ingest paths + portable payload tests in Docker).
+Checkpoint tags: **[v0.1.0](https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.1.0)** (paths + UT/CI),
+**[v0.1.1](https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.1.1)** (forker docs close-out).
 
 **Status and next action live only in [`docs/handoff/CURRENT.md`](docs/handoff/CURRENT.md)** — not here.
 
