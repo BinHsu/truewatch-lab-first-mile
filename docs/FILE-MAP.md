@@ -78,7 +78,7 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `docs/truewatch-owl.md` | Canonical TrueWatch OWL/MCP/CLI guidance for this lab (synced from the trial workspace). Prefer over legacy `/mcp-server/` docs. | Anyone integrating TrueWatch or advising MCP setup |
 | `docs/observability-glossary.md` | Metrics/Logs/APM/RUM glossary, span vs spam, and TrueWatch console ↔ signal map for this lab. | Forkers learning platform terms; anyone looking for `trace_id` in the wrong console |
 | `docs/runbooks/owl-cli-credentials.md` | Credentials runbook: Open API Key → OWL `.env` (§3–4), Workspace Token + DataWay (§5 W1–W5), OWL CLI install/verify (§6 A–G). | Forkers wiring OWL or ingest credentials |
-| `docs/runbooks/dataway-emit.md` | Forker steps to dry-run and POST via DataWay (`scripts/emit.py --mode dataway` or Compose), then find it in Explorer. | Anyone proving ADR-0001 DataWay path |
+| `docs/runbooks/dataway-emit.md` | Forker steps for DataWay via `EMIT_MODE=dataway` (Compose or host), then Explorer. | Anyone proving ADR-0001 DataWay path |
 | `docs/runbooks/datakit-emit.md` | Forker steps for Compose DataKit emit; documents lab series vs side-effect measurement `dk` (self-metrics). | Anyone proving ADR-0001 DataKit path |
 | `docs/runbooks/ddtrace-emit.md` | Forker steps for StatsD metric + DDTrace span via DataKit; OWL-first verify then Console. | Anyone proving v0.0.3 / ADR-0003 |
 | `docs/runbooks/otel-emit.md` | Forker steps for OTLP protobuf metric + span via DataKit; OWL-first verify then Console. | Anyone proving v0.0.4 / ADR-0003 |
