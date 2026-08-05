@@ -1,5 +1,5 @@
 # Lab emitter image — preferred runtime for emit modes (ADR-0002 / IaC).
-# Pins msgpack for DDTrace /v0.4/traces (v0.0.3+). dataway/datakit still stdlib-only scripts.
+# Pins msgpack (DDTrace) + opentelemetry-proto (OTLP protobuf). dataway/datakit = stdlib.
 FROM python:3.12-alpine
 
 WORKDIR /lab

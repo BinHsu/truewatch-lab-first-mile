@@ -3,10 +3,11 @@
 # DataWay only (v0.0.1 — no DataKit container):
 #   docker compose --env-file .env run --rm --no-deps emit --mode dataway --dry-run
 #
-# DataKit LP (v0.0.2) / DDTrace+StatsD (v0.0.3) — profile "datakit":
+# DataKit LP (v0.0.2) / DDTrace+StatsD (v0.0.3) / OTel (v0.0.4) — profile "datakit":
 #   docker compose --profile datakit --env-file .env up -d datakit
 #   docker compose --env-file .env run --rm -e EMIT_MODE=datakit emit
 #   docker compose --env-file .env run --rm -e EMIT_MODE=ddtrace emit
+#   docker compose --env-file .env run --rm -e EMIT_MODE=otel emit
 #
 # Requires .env with DK_DATAWAY for the datakit profile
 # (owl-cli-credentials §5). Never commit .env.
@@ -14,6 +15,7 @@
 # Image: https://docs.truewatch.com/datakit/datakit-docker-deploy/
 # DDTrace: https://docs.truewatch.com/integrations/ddtrace/
 # StatsD: https://docs.truewatch.com/integrations/statsd/
+# OpenTelemetry: https://docs.truewatch.com/integrations/opentelemetry/
 
 services:
   datakit:
@@ -24,8 +26,12 @@ services:
     environment:
       ENV_DATAWAY: ${DK_DATAWAY:?set DK_DATAWAY in .env (runbook owl-cli-credentials §5)}
       ENV_HTTP_LISTEN: "0.0.0.0:9529"
-      # dk = self-metrics; ddtrace = APM spans; statsd = DogStatsD metrics (UDP 8125)
-      ENV_DEFAULT_ENABLED_INPUTS: "dk,ddtrace,statsd"
+      # dk = self-metrics; ddtrace = APM; statsd = DogStatsD; opentelemetry = OTLP HTTP
+      ENV_DEFAULT_ENABLED_INPUTS: "dk,ddtrace,statsd,opentelemetry"
+      # OTLP HTTP on :9529 (protobuf only). gRPC :4317 not published in this lab.
+      ENV_INPUT_OTEL_HTTP: '{"enable":true,"http_status_ok":200,"trace_api":"/otel/v1/traces","metric_api":"/otel/v1/metrics"}'
+      # Promote OTEL attributes (e.g. path) to searchable tags.
+      ENV_INPUT_OTEL_CUSTOMER_TAGS_ALL: "true"
       # Do not force path=datakit here — emitters set their own path tags.
       ENV_GLOBAL_HOST_TAGS: "lab=truewatch-lab-first-mile"
     ports:

@@ -14,10 +14,11 @@ Engineering security scaffold). Workload code is not written yet — start from
 3. [`docs/runbooks/dataway-emit.md`](docs/runbooks/dataway-emit.md) — DataWay synthetic metric (v0.0.1)
 4. [`docs/runbooks/datakit-emit.md`](docs/runbooks/datakit-emit.md) — DataKit via Compose `:9529` (v0.0.2)
 5. [`docs/runbooks/ddtrace-emit.md`](docs/runbooks/ddtrace-emit.md) — StatsD + DDTrace via DataKit (v0.0.3)
-6. [`docs/observability-glossary.md`](docs/observability-glossary.md) — Metrics/Logs/APM/RUM terms + TrueWatch console map
-7. `docs/truewatch-owl.md` — OWL / MCP / CLI product rules for this lab
-8. `AGENTS.md` — operating contract for every agent and human
-9. Copy `.env.example` → `.env` locally (never commit `.env`)
+6. [`docs/runbooks/otel-emit.md`](docs/runbooks/otel-emit.md) — OTLP metric + span via DataKit (v0.0.4)
+7. [`docs/observability-glossary.md`](docs/observability-glossary.md) — Metrics/Logs/APM/RUM terms + TrueWatch console map
+8. `docs/truewatch-owl.md` — OWL / MCP / CLI product rules for this lab
+9. `AGENTS.md` — operating contract for every agent and human
+10. Copy `.env.example` → `.env` locally (never commit `.env`)
 
 ```bash
 git config core.hooksPath .githooks   # if not already set after clone
@@ -29,6 +30,7 @@ Credential and CLI steps live in the runbook (not duplicated here).
 
 - Ingest paths ([ADR-0001](docs/ADR/0001-three-ingest-paths.md) + [ADR-0003](docs/ADR/0003-otel-trace-path.md)): **DataKit**, **DataWay**, **DDTrace (metric+span)**, **OTel (metric+span)**
 - Select path with `--mode` / `EMIT_MODE` ([ADR-0002](docs/ADR/0002-release-tags-and-emit-mode.md)): `dataway` (v0.0.1), `datakit` (v0.0.2), `ddtrace` (v0.0.3), `otel` (v0.0.4)
+- Spaced repeats: `emit.py --count 2` (default interval **5s**, `EMIT_INTERVAL_SEC`) so Metrics UI does not collapse sub-second shots
 - Docker Compose preferred for a clean host; host `python3` OK for DataWay
 - Visible data in TrueWatch Explorer per path
 - Optional: one Monitor + one thin Dashboard (Dashboard writes via OWL CLI / console, not MCP)

@@ -55,6 +55,21 @@ Owner accepted **v0.0.4 OTel** and then required **metric + span** for **both**
 v0.0.3 (DDTrace + StatsD) and v0.0.4 (OTLP traces + OTLP metrics). Canonical
 detail: [ADR-0003](0003-otel-trace-path.md).
 
+## Addendum — 2026-08-05
+
+Owner verified OTel Console: two emit shots ~200ms apart looked like **one** metric
+point (gauge value `1`) while APM showed two spans. Decision: unify **repeat
+spacing** on `scripts/emit.py` for all modes:
+
+| Knob | Default | Env |
+|---|---|---|
+| `--count` | `1` | `EMIT_COUNT` |
+| `--interval` | **`5` seconds** | `EMIT_INTERVAL_SEC` |
+
+Mode scripts stay single-shot. The dispatcher sleeps between shots (skipped on
+`--dry-run`). Use `--count 2` (or higher) when proving Metrics Explorer shows
+distinct points; protocol proof still works with `count=1`.
+
 ## Re-check trigger
 
 Revisit if Compose cannot run DataKit cleanly on macOS arm64, or if Cloudflare /

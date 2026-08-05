@@ -60,6 +60,7 @@ python3 scripts/emit.py --mode dataway
 python3 scripts/emit.py --mode dataway --also-log
 # Compose:
 docker compose --env-file .env run --rm emit --mode dataway
+# Distinct Metrics points: --count 2 (default 5s between shots)
 ```
 
 Expect `metric_http_status` in 2xx and `metric_post=OK`.

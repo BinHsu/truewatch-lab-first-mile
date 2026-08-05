@@ -83,6 +83,7 @@ DATAKIT_URL=http://127.0.0.1:9529 python3 scripts/emit.py --mode datakit
 DATAKIT_URL=http://127.0.0.1:9529 python3 scripts/emit.py --mode datakit --also-log
 # Compose:
 docker compose --env-file .env run --rm -e EMIT_MODE=datakit emit
+# Distinct Metrics points: --count 2 (5s default interval via emit.py)
 ```
 
 Expect `metric_http_status` in 2xx and `metric_post=OK`.

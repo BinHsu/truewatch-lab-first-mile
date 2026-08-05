@@ -50,6 +50,7 @@ Expect `emit_mode=ddtrace`, a StatsD packet with `path:ddtrace`, and a printed
 
 ```bash
 docker compose --env-file .env run --rm -e EMIT_MODE=ddtrace emit
+# Distinct Metrics points: --count 2 (default 5s gap; see ADR-0002)
 ```
 
 Expect `statsd_send=OK` and `traces_post=OK` (`traces_http_status` in 2xx).

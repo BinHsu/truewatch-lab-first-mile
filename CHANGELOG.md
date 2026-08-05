@@ -22,8 +22,11 @@
 - Emitter image pins `msgpack` (`requirements-emitter.txt`)
 - Runbook: `docs/runbooks/ddtrace-emit.md` (OWL-first, then Console)
 
-## v0.0.4 — planned (OpenTelemetry → DataKit)
+## v0.0.4 — 2026-08-05 (OpenTelemetry → DataKit)
 
-- `EMIT_MODE=otel`: **OTLP metrics + OTLP traces** (DataKit converts both)
-- Glossary: `docs/observability-glossary.md`
-- See ADR-0003
+- `EMIT_MODE=otel`: OTLP protobuf **metric + span** (`/otel/v1/metrics`, `/otel/v1/traces`)
+- Compose: enable `opentelemetry` (+ existing `dk,ddtrace,statsd`); `ENV_INPUT_OTEL_HTTP`
+- Emitter pins `opentelemetry-proto==1.34.1`
+- Runbook: `docs/runbooks/otel-emit.md` (OWL-first, then Console)
+- `emit.py`: `--count` / `--interval` (default **5s**) for spaced repeats across all modes (ADR-0002)
+- Deferred: `tests/test_emit_payloads.py` + GHA until owner Console verify

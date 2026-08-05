@@ -1,3 +1,4 @@
 # Pinned deps for docker/Dockerfile.emitter (Compose emit path).
 # Host python may omit these for dataway/datakit (stdlib); ddtrace/otel modes need them.
 msgpack==1.1.1
+opentelemetry-proto==1.34.1
