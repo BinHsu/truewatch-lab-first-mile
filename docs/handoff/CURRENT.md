@@ -8,21 +8,21 @@
 > do the thing. Then update with the result. A post-hoc-only handoff is worthless precisely when it
 > is needed. See `AGENTS.md` §4.
 
-**Last updated:** 2026-08-05 — Payload UT runs **inside emitter Docker image**
-(`bash scripts/run-emit-payload-tests.sh`); no host `pip install` (ADR-0002).
+**Last updated:** 2026-08-05 — **Shipping v0.1.0** lab checkpoint (four ingest paths + portable
+payload UT/CI). About to commit docs, tag, push, GitHub release.
 
 ---
 
 ## 1. Read these first
 
 1. `docs/handoff/CURRENT.md` (this file)
-2. `tests/test_emit_payloads.py`
-3. `docs/runbooks/otel-emit.md` / `docs/ADR/0002-release-tags-and-emit-mode.md`
-4. `CHANGELOG.md` / `README.md`
+2. `CHANGELOG.md` (v0.1.0)
+3. `docs/ADR/0002-release-tags-and-emit-mode.md`
+4. `scripts/run-emit-payload-tests.sh`
 
 ## 2. Last completed milestone
 
-**v0.0.4 released** + **payload contract tests in CI**.
+**v0.0.4** tagged earlier. **v0.1.0** = summary of first-mile lab + UT/CI (cutting now).
 
 | Tag / commit | Content |
 |---|---|
@@ -30,6 +30,7 @@
 | `v0.0.2` / `e287eb7` | DataKit — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.2 |
 | `v0.0.3` / `3307a25` | DDTrace — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.3 |
 | `v0.0.4` / `d1cf739` | OTel — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.4 |
+| *(cutting)* `v0.1.0` | Checkpoint: paths + Docker payload UT + CI |
 
 ## 3. Repository state
 
@@ -39,25 +40,26 @@
 
 ## 4. Environment / system state
 
-- Unchanged lab host (id1, Colima).
-- Payload UT: Docker only — pins live in emitter image, not host site-packages.
+- Site **id1**; Colima Docker OK.
+- Payload UT: `bash scripts/run-emit-payload-tests.sh` only (no host pip).
 
-## 5. Commands already run
+## 5. Commands already run / about to run
 
 ```bash
-bash scripts/run-emit-payload-tests.sh
-# Ran 9 tests — OK (inside truewatch-lab-first-mile-emit:payload-test)
+bash scripts/run-emit-payload-tests.sh   # already OK
+git tag -a v0.1.0 && git push origin HEAD v0.1.0
+gh release create v0.1.0 …
 ```
 
 ## 6. Test results
 
-- `tests/test_emit_payloads.py` via Docker: **pass** `[VERIFIED]` (9 tests), including
-  dry-run stdout must not contain canary token.
+- Ingest v0.0.1–v0.0.4: OWL and/or Console as recorded in prior handoffs `[VERIFIED]`
+- Payload UT in Docker: **pass** `[VERIFIED]` (9 tests)
 
 ## 7. Current blockers, in priority order
 
-1. None for ingest paths / payload contracts.
-2. Optional: Monitor + Dashboard (still AWAITING DECISION).
+1. Finish v0.1.0 tag + release + record URL here.
+2. Optional next scope: Monitor + Dashboard (AWAITING DECISION).
 
 ## 8. AWAITING DECISION — owner only
 
@@ -65,14 +67,13 @@ bash scripts/run-emit-payload-tests.sh
 
 ## 9. Exact next safe action
 
+If interrupted after commit but before tag: tag the v0.1.0 commit, push, `gh release create`.
+
 ```bash
 bash scripts/run-emit-payload-tests.sh
 ```
 
-Or owner decides Monitor/Dashboard scope.
-
 ## 10. Things that will bite you
 
-- OTLP → `M::otel_service`; quote dotted field names in DQL.
-- `--count 2` for distinct Metrics UI points (5s default).
+- Do not retag v0.0.4; checkpoint is **v0.1.0**.
 - Never commit `.env`.

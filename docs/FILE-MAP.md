@@ -32,7 +32,7 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `AGENTS.md` | The operating contract for every agent and human: read-first order, single-source-of-status, handoff protocol, evidence standard, decision records, never-commit list, tool-access classes, destructive-action protocol, and the rule against checks that cannot fail. Tool-agnostic. | Any agent or contributor, first |
 | `CLAUDE.md` | Claude Code-only mechanics on top of `AGENTS.md`, which it imports on line 1. Permissions, delegation boundary, conflict resolution. Holds no shared policy. | Claude Code sessions |
 | `README.md` | What this lab is (TrueWatch first-mile), start-here pointers, and that status lives only in handoff. States no project status by design. | Forkers, first-time readers |
-| `CHANGELOG.md` | Release notes for git tags v0.0.1–v0.0.4 (DataWay / DataKit / DDTrace / OTel). | Anyone cutting or consuming a release tag |
+| `CHANGELOG.md` | Release notes for git tags v0.0.1–v0.1.0 (ingest slices + lab checkpoint). | Anyone cutting or consuming a release tag |
 | `docker-compose.yml` | Compose: `emit` + optional `datakit` (profile) with `dk,ddtrace,statsd,opentelemetry` (v0.0.2–v0.0.4). | Forkers preferring a clean Docker host |
 | `SECURITY.md` | Security ground rules an agent must not guess at: secrets, untrusted input, external actions, dependencies. | Reviewers; anyone touching secrets or external systems |
 | `PRODUCT_SENSE.md` | The product red line that hidden destructive actions are a defect, plus the preview/confirm/log/abort protocol. Restates the protocol also given in `AGENTS.md` §10. | Any agent before a destructive command |

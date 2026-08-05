@@ -21,6 +21,7 @@ need one entrypoint that selects the push path by flag or environment variable.
 | **v0.0.2** | DataKit path (prefer Compose); `EMIT_MODE=datakit` implemented |
 | **v0.0.3** | DDTrace → DataKit: **metric (StatsD/DogStatsD) + span**; `EMIT_MODE=ddtrace` ([ADR-0003](0003-otel-trace-path.md)) |
 | **v0.0.4** | OTLP → DataKit: **metric + span**; `EMIT_MODE=otel` ([ADR-0003](0003-otel-trace-path.md)) |
+| **v0.1.0** | Lab checkpoint: v0.0.1–v0.0.4 paths + portable payload UT in Docker + CI |
 
 Unfinished modes must print `NOT-IMPLEMENTED` and exit **non-zero** (never fake OK).
 
@@ -70,6 +71,11 @@ Precedence: CLI flag → env (if set) → default. Bad env values raise on cast.
 Mode scripts stay single-shot. The dispatcher sleeps between shots (skipped on
 `--dry-run`). Use `--count 2` (or higher) when proving Metrics Explorer shows
 distinct points; protocol proof still works with `count=1`.
+
+## Addendum — 2026-08-05 (v0.1.0 checkpoint)
+
+Owner treated post-v0.0.4 work (payload contracts + Docker/CI, no host pip) as the
+lab’s first summary release **v0.1.0**, not a retag of v0.0.4.
 
 ## Re-check trigger
 

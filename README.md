@@ -31,7 +31,9 @@ Credential and CLI steps live in the runbook (not duplicated here).
 - Ingest paths ([ADR-0001](docs/ADR/0001-three-ingest-paths.md) + [ADR-0003](docs/ADR/0003-otel-trace-path.md)): **DataKit**, **DataWay**, **DDTrace (metric+span)**, **OTel (metric+span)**
 - Select path with `--mode` / `EMIT_MODE` ([ADR-0002](docs/ADR/0002-release-tags-and-emit-mode.md)): `dataway` (v0.0.1), `datakit` (v0.0.2), `ddtrace` (v0.0.3), `otel` (v0.0.4)
 - Spaced repeats: `emit.py --count 2` (default interval **5s**, `EMIT_INTERVAL_SEC`) so Metrics UI does not collapse sub-second shots
-- Docker Compose preferred for a clean host; host `python3` OK for DataWay
+- Portable checks: `bash scripts/run-emit-payload-tests.sh` (Docker; no host pip)
+- Docker Compose preferred for a clean host; host `python3` OK for DataWay-only
+- Milestone tag **v0.1.0** = four ingest paths + payload UT/CI checkpoint
 - Visible data in TrueWatch Explorer per path
 - Optional: one Monitor + one thin Dashboard (Dashboard writes via OWL CLI / console, not MCP)
 - Optional: OWL MCP in Cursor with Bearer auth
