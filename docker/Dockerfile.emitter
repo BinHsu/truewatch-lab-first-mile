@@ -1,5 +1,6 @@
 # Lab emitter image — preferred runtime for emit modes (ADR-0002 / IaC).
 # Pins msgpack (DDTrace) + opentelemetry-proto (OTLP protobuf). dataway/datakit = stdlib.
+# Also carries payload contract tests so the host need not pip-install pins.
 FROM python:3.12-alpine
 
 WORKDIR /lab
@@ -9,6 +10,7 @@ RUN pip install --no-cache-dir -r requirements-emitter.txt
 
 COPY scripts/emit.py scripts/emit_dataway.py scripts/emit_datakit.py \
      scripts/emit_ddtrace.py scripts/emit_otel.py ./scripts/
+COPY tests/test_emit_payloads.py ./tests/
 
 ENV EMIT_MODE=dataway
 ENTRYPOINT ["python3", "scripts/emit.py"]

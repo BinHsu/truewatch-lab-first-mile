@@ -86,7 +86,9 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `docs/ADR/0001-three-ingest-paths.md` | Accepted decision: lab exercises DataKit, DataWay direct write, and DDTrace→DataKit (not Datadog Agent→DataKit). | Anyone implementing or scoping ingest emitters |
 | `docs/ADR/0002-release-tags-and-emit-mode.md` | Accepted: tags v0.0.1–v0.0.4, `EMIT_MODE` / `--mode`, Docker-first preference. | Anyone cutting releases or adding emit modes |
 | `docs/ADR/0003-otel-trace-path.md` | Accepted: v0.0.3/v0.0.4 each emit protocol-native **metric + span** via DataKit. | Anyone implementing ddtrace/otel or comparing to LP ping |
-| `docker/Dockerfile.emitter` | Alpine Python emit image; installs `requirements-emitter.txt` then copies emit scripts. | Compose build for `emit` service |
+| `docker/Dockerfile.emitter` | Alpine Python emit image; installs `requirements-emitter.txt`, copies emit scripts + payload tests. | Compose `emit`; `scripts/run-emit-payload-tests.sh` |
+| `scripts/run-emit-payload-tests.sh` | Builds emitter image and runs `tests/test_emit_payloads.py` inside it (no host pip). | Local verify; CI |
+| `tests/test_emit_payloads.py` | In-process contracts: LP/StatsD/OTLP shapes; DataWay dry-run must not print token. Run via Docker script. | CI; anyone changing emit scripts |
 | `docs/validation/evidence/README.md` | The fixed artifact format for a Group B observation: header fields, redaction rules, worked template. | Anyone recording a manual or instrumented verification |
 | `docs/validation/evidence/REQUIRED.json` | Machine-readable manifest of which artifacts each phase must produce, plus the field, tag and forbidden-pattern configuration the validator enforces. Authoritative — the validator rejects artifacts it does not list. | The validator; anyone adding a phase or an artifact |
 
@@ -111,7 +113,6 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | Path | What it is for | Who reads it |
 |---|---|---|
 | `tests/test_evidence_artifacts.py` | Validates the record of every Group B verification: header completeness, evidence tag, `result`, forbidden content, per-artifact content rules. Passes vacuously with zero artifacts; `--require <phase>` turns it into a phase gate; `--self-test` proves the validator can still fail. Pure stdlib. | CI; anyone closing a phase gate |
-| `tests/test_emit_payloads.py` | In-process contracts: LP/StatsD/OTLP payload shapes; DataWay dry-run must not print workspace token (`token=***`). | CI (`security-checks.yml`); anyone changing emit scripts |
 
 ## `tools/` — tool layer
 

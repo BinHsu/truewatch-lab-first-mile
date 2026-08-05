@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Contract tests for emit payloads and credential redaction (in-process).
 
-No network. Loads scripts/*.py via importlib. Optional deps (msgpack,
-opentelemetry-proto) are required for ddtrace/otel sections — CI installs
-requirements-emitter.txt.
+No network. Loads scripts/*.py via importlib.
 
-    python3 -m unittest tests.test_emit_payloads -v
+Preferred run (clean host — ADR-0002): Docker emitter image, not host pip:
+
+    bash scripts/run-emit-payload-tests.sh
+
+Inside the image / CI image:
+
+    python3 tests/test_emit_payloads.py -v
 """
 
 from __future__ import annotations

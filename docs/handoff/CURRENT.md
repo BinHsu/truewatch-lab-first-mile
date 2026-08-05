@@ -8,9 +8,8 @@
 > do the thing. Then update with the result. A post-hoc-only handoff is worthless precisely when it
 > is needed. See `AGENTS.md` §4.
 
-**Last updated:** 2026-08-05 — **Emit payload UT + CI landed** (`tests/test_emit_payloads.py`,
-in-process DataWay token redact). Also: simplified `emit.py` count/interval defaults (no `_env_*`
-helpers). v0.0.1–v0.0.4 tags unchanged.
+**Last updated:** 2026-08-05 — Payload UT runs **inside emitter Docker image**
+(`bash scripts/run-emit-payload-tests.sh`); no host `pip install` (ADR-0002).
 
 ---
 
@@ -41,20 +40,19 @@ helpers). v0.0.1–v0.0.4 tags unchanged.
 ## 4. Environment / system state
 
 - Unchanged lab host (id1, Colima).
-- CI installs `requirements-emitter.txt` before payload unittest.
+- Payload UT: Docker only — pins live in emitter image, not host site-packages.
 
 ## 5. Commands already run
 
 ```bash
-python3 -m pip install -r requirements-emitter.txt
-python3 -m unittest tests.test_emit_payloads -v
-# Ran 9 tests — OK
+bash scripts/run-emit-payload-tests.sh
+# Ran 9 tests — OK (inside truewatch-lab-first-mile-emit:payload-test)
 ```
 
 ## 6. Test results
 
-- `tests.test_emit_payloads`: **pass** `[VERIFIED]` (9 tests), including dry-run stdout
-  must not contain canary token.
+- `tests/test_emit_payloads.py` via Docker: **pass** `[VERIFIED]` (9 tests), including
+  dry-run stdout must not contain canary token.
 
 ## 7. Current blockers, in priority order
 
@@ -68,7 +66,7 @@ python3 -m unittest tests.test_emit_payloads -v
 ## 9. Exact next safe action
 
 ```bash
-python3 -m unittest tests.test_emit_payloads -v
+bash scripts/run-emit-payload-tests.sh
 ```
 
 Or owner decides Monitor/Dashboard scope.

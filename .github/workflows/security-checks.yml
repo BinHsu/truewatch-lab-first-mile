@@ -66,12 +66,10 @@ jobs:
       - name: Evidence artifacts well-formed
         run: python3 tests/test_evidence_artifacts.py
 
-      # Emit payload contracts (LP / StatsD / OTLP shapes + DataWay token redact).
-      # Installs emitter pins so ddtrace/otel sections run rather than skip.
-      - name: Emit payload contracts
-        run: |
-          python3 -m pip install --quiet -r requirements-emitter.txt
-          python3 -m unittest tests.test_emit_payloads -v
+      # Emit payload contracts inside the emitter image (pins stay in Docker;
+      # do not pip-install requirements-emitter.txt on the runner/host).
+      - name: Emit payload contracts (Docker)
+        run: bash scripts/run-emit-payload-tests.sh
 
       # Phase gates. Uncomment and name a phase once it is defined in REQUIRED.json.
       # - run: python3 tests/test_evidence_artifacts.py --require {{PHASE}}

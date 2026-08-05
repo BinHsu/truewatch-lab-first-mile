@@ -8,6 +8,8 @@
 #   docker compose --env-file .env run --rm -e EMIT_MODE=datakit emit
 #   docker compose --env-file .env run --rm -e EMIT_MODE=ddtrace emit
 #   docker compose --env-file .env run --rm -e EMIT_MODE=otel emit
+# Payload contracts (no host pip — ADR-0002):
+#   bash scripts/run-emit-payload-tests.sh
 #
 # Requires .env with DK_DATAWAY for the datakit profile
 # (owl-cli-credentials §5). Never commit .env.

@@ -29,4 +29,4 @@
 - Emitter pins `opentelemetry-proto==1.34.1`
 - Runbook: `docs/runbooks/otel-emit.md` (OWL-first, then Console)
 - `emit.py`: `--count` / `--interval` (default **5s**) for spaced repeats across all modes (ADR-0002)
-- `tests/test_emit_payloads.py` + CI step: payload shapes + DataWay token redact (in-process)
+- `tests/test_emit_payloads.py` + `scripts/run-emit-payload-tests.sh` (Docker; no host pip) + CI
