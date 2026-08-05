@@ -102,7 +102,7 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `scripts/cleanup-scanner.py` | Secret-residue scan: staged/tracked sensitive files and credential patterns. Gitignored local `.env` is allowed (approved lab path). Exit 1 on findings. Pure stdlib. | CI; the pre-commit hook; anyone ending a session |
 | `scripts/safe-exec.sh` | Wraps a destructive command in preview → confirm → log → execute, so destruction is never the silent default. | Anyone aliasing a dangerous command |
 | `scripts/security-benchmark.py` | Security asserted as a benchmark rather than a review item. **Ships with three unimplemented benchmarks that report `NOT-IMPLEMENTED` and are never counted as passes.** `--require-implemented` turns it into a gate once wired. | CI; whoever specialises the benchmarks per stack |
-| `scripts/emit.py` | Unified emitter entry: `--mode` / `EMIT_MODE`; `--count` / `--interval` (default 5s) for spaced repeats across all modes. | Anyone emitting lab telemetry |
+| `scripts/emit.py` | Unified emitter: prefer `EMIT_MODE`; optional `--mode`; `--count` / `--interval` (default 5s). | Anyone emitting lab telemetry |
 | `scripts/emit_dataway.py` | DataWay mode (v0.0.1): synthetic metric/log to `/v1/write/…`; redacts token; lab User-Agent (avoids CF 1010). | Forkers / agents proving DataWay ingest |
 | `scripts/emit_datakit.py` | DataKit mode (v0.0.2): synthetic metric/log to local DataKit `/v1/write/…` (`DATAKIT_URL`, default `:9529`). | Forkers / agents proving DataKit ingest |
 | `scripts/emit_ddtrace.py` | DDTrace mode (v0.0.3): DogStatsD metric + `/v0.4/traces` span (needs msgpack). | Forkers / agents proving DDTrace ingest |
