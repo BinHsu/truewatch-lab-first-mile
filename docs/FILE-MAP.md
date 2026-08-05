@@ -37,7 +37,7 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `SECURITY.md` | Security ground rules an agent must not guess at: secrets, untrusted input, external actions, dependencies. | Reviewers; anyone touching secrets or external systems |
 | `PRODUCT_SENSE.md` | The product red line that hidden destructive actions are a defect, plus the preview/confirm/log/abort protocol. Restates the protocol also given in `AGENTS.md` §10. | Any agent before a destructive command |
 | `.gitignore` | Declares what must never be committed. Note the git gotcha recorded in `AGENTS.md` §7: ignore `dir/*`, not `dir/`, or a negation cannot re-include a member. | Anyone adding a file type that might carry secrets |
-| `.env.example` | Local env var names (OWL, Workspace Token, DataWay/DK_DATAWAY, DataKit/StatsD); copy to `.env`. | Anyone wiring ingest or OWL |
+| `.env.example` | Local env var names (OWL, Workspace Token, DataWay/DK_DATAWAY, DataKit/StatsD, `LAB_ALERT_EMAIL` for v0.2.0 N3); copy to `.env`. | Anyone wiring ingest, OWL, or lab alert mail |
 | `requirements-emitter.txt` | Pinned pip deps for emitter image (`msgpack`, `opentelemetry-proto`). | Compose emit build; host optional for ddtrace/otel |
 | `docs/FILE-MAP.md` | This file. The exhaustive manifest. | Anyone about to create a new file |
 
@@ -74,6 +74,19 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `docs/THREAT_MODEL.md` | STRIDE-lite entry template, one per security-sensitive surface, plus the agent-era additions. **Template only until a surface exists.** | Anyone changing auth, crypto, payments or PII handling |
 | `docs/design/README.md` | Rule that open proposals live in `docs/design/`, not in decision records, and must be marked `AWAITING DECISION`. | Anyone writing up an undecided question |
 | `docs/design/acceptance-criteria.md` | How to write acceptance criteria an agent can actually run: the Group A / Group B split, and how a Group B step is made auditable by a Group A command. | Anyone defining a milestone, phase or exit gate |
+| `docs/design/monitor-dashboard-as-code.md` | Design + accepted v0.2/v0.3 content; TF+JSON local state; CLI apply contract retained. | Before Monitor/Dashboard/notify IaC |
+| `docs/runbooks/monitor-dashboard-tf.md` | How to `terraform init/plan/apply` lab closed-loop; local state; import notes. | Anyone applying v0.2.0 TF |
+| `docs/ADR/0004-tf-json-closed-loop.md` | Accepted: v0.2.0 TF+JSON+local state; v0.3.0 OWL+Tobylike MCP; Dashboard B; notify N3. | Before closed-loop or MCP dual-client work |
+| `terraform/` | v0.2.0 TrueWatch TF root (notify → alert policy → dashboard; monitor gated). | Anyone applying lab IaC |
+| `terraform/versions.tf` | Terraform + TrueWatch provider; local state by default. | TF apply |
+| `terraform/variables.tf` | Email, endpoint, enable_* flags. | TF apply |
+| `terraform/alert.tf` | mailGroup notify + alert policy. | TF apply |
+| `terraform/dashboard.tf` | `truewatch_dashboard` from JSON. | TF apply |
+| `terraform/monitor.tf` | `truewatch_monitor_json` (default off). | TF apply |
+| `terraform/outputs.tf` | UUIDs for notify/policy/dashboard/monitor. | TF apply |
+| `terraform/json/dashboard.json` | Dashboard B template_info (4-path metrics + APM placeholder). | Edit then TF apply |
+| `terraform/json/monitor.checker.json` | Checker stub; keep enable_monitor false until validated. | Edit then TF apply |
+| `terraform/terraform.tfvars.example` | Example tfvars (copy to gitignored `terraform.tfvars`). | Forkers wiring TF |
 | `docs/handoff/CURRENT.md` | The single source of project status and the exact next safe action. The file that lets a cold agent or human resume with no chat history. | Every worker, before anything else |
 | `docs/truewatch-owl.md` | Canonical TrueWatch OWL/MCP/CLI guidance for this lab (synced from the trial workspace). Prefer over legacy `/mcp-server/` docs. | Anyone integrating TrueWatch or advising MCP setup |
 | `docs/observability-glossary.md` | Metrics/Logs/APM/RUM glossary, span vs spam, and TrueWatch console ↔ signal map for this lab. | Forkers learning platform terms; anyone looking for `trace_id` in the wrong console |
@@ -84,7 +97,7 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `docs/runbooks/otel-emit.md` | Forker steps for OTLP protobuf metric + span via DataKit; OWL-first verify then Console. | Anyone proving v0.0.4 / ADR-0003 |
 | `docs/ADR/INDEX.md` | Routes decision records by reader goal. | Anyone looking for why a lab choice was made |
 | `docs/ADR/0001-three-ingest-paths.md` | Accepted decision: lab exercises DataKit, DataWay direct write, and DDTrace→DataKit (not Datadog Agent→DataKit). | Anyone implementing or scoping ingest emitters |
-| `docs/ADR/0002-release-tags-and-emit-mode.md` | Accepted: tags v0.0.1–v0.0.4, `EMIT_MODE` / `--mode`, Docker-first preference. | Anyone cutting releases or adding emit modes |
+| `docs/ADR/0002-release-tags-and-emit-mode.md` | Accepted: tags v0.0.1–v0.3.0 (see addenda), `EMIT_MODE` / Docker-first. | Anyone cutting releases or adding emit modes |
 | `docs/ADR/0003-otel-trace-path.md` | Accepted: v0.0.3/v0.0.4 each emit protocol-native **metric + span** via DataKit. | Anyone implementing ddtrace/otel or comparing to LP ping |
 | `docker/Dockerfile.emitter` | Alpine Python emit image; installs `requirements-emitter.txt`, copies emit scripts + payload tests. | Compose `emit`; `scripts/run-emit-payload-tests.sh` |
 | `scripts/run-emit-payload-tests.sh` | Builds emitter image and runs `tests/test_emit_payloads.py` inside it (no host pip). | Local verify; CI |
@@ -102,6 +115,7 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `scripts/cleanup-scanner.py` | Secret-residue scan: staged/tracked sensitive files and credential patterns. Gitignored local `.env` is allowed (approved lab path). Exit 1 on findings. Pure stdlib. | CI; the pre-commit hook; anyone ending a session |
 | `scripts/safe-exec.sh` | Wraps a destructive command in preview → confirm → log → execute, so destruction is never the silent default. | Anyone aliasing a dangerous command |
 | `scripts/security-benchmark.py` | Security asserted as a benchmark rather than a review item. **Ships with three unimplemented benchmarks that report `NOT-IMPLEMENTED` and are never counted as passes.** `--require-implemented` turns it into a gate once wired. | CI; whoever specialises the benchmarks per stack |
+| `scripts/tf-with-env.sh` | Sources `.env`, sets `TF_VAR_lab_alert_email` + `TRUEWATCH_ACCESS_TOKEN`, runs `terraform` in `terraform/`. | Forkers / anyone planning or applying v0.2.0 TF |
 | `scripts/emit.py` | Unified emitter: prefer `EMIT_MODE`; optional `--mode`; `--count` / `--interval` (default 5s). | Anyone emitting lab telemetry |
 | `scripts/emit_dataway.py` | DataWay mode (v0.0.1): synthetic metric/log to `/v1/write/…`; redacts token; lab User-Agent (avoids CF 1010). | Forkers / agents proving DataWay ingest |
 | `scripts/emit_datakit.py` | DataKit mode (v0.0.2): synthetic metric/log to local DataKit `/v1/write/…` (`DATAKIT_URL`, default `:9529`). | Forkers / agents proving DataKit ingest |

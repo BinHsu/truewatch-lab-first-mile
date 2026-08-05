@@ -1,0 +1,11 @@
+# Copy to terraform.tfvars (gitignored) or export TF_VAR_* from .env
+
+lab_alert_email = "you@example.com"
+
+# truewatch_end_point = "https://id1-openapi.truewatch.com"
+# name_prefix         = "lab-first-mile"
+# rule_timezone       = "Asia/Shanghai"
+
+enable_notify_chain = true
+enable_dashboard    = true
+enable_monitor      = true

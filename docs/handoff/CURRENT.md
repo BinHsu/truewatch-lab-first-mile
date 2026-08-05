@@ -8,71 +8,76 @@
 > do the thing. Then update with the result. A post-hoc-only handoff is worthless precisely when it
 > is needed. See `AGENTS.md` §4.
 
-**Last updated:** 2026-08-05 — **v0.1.1 released** (`7ad5486`). First-mile ingest chapter closed
-(paths + UT/CI + forker docs). Optional next: Monitor / Dashboard.
+**Last updated:** 2026-08-05 — **v0.2.0 opened:** ADR-0004 + `terraform/` scaffold (TF+JSON,
+local state). Monitor gated off until checker JSON is validated. No cloud `apply` yet.
 
 ---
 
 ## 1. Read these first
 
 1. `docs/handoff/CURRENT.md` (this file)
-2. `README.md` / `CHANGELOG.md`
-3. `scripts/run-emit-payload-tests.sh`
-4. `docs/ADR/0002-release-tags-and-emit-mode.md`
+2. `docs/ADR/0004-tf-json-closed-loop.md`
+3. `docs/runbooks/monitor-dashboard-tf.md`
+4. `docs/design/monitor-dashboard-as-code.md`
+5. `README.md` / `CHANGELOG.md`
 
 ## 2. Last completed milestone
 
-**v0.1.1 — Docs close-out** (tagged + GitHub release).
+**v0.1.1 — Docs close-out.** **v0.2.0 in progress** (scaffold only).
 
 | Tag / commit | Content |
 |---|---|
-| `v0.0.1` / `6be3e7f` | DataWay — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.1 |
-| `v0.0.2` / `e287eb7` | DataKit — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.2 |
-| `v0.0.3` / `3307a25` | DDTrace — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.3 |
-| `v0.0.4` / `d1cf739` | OTel — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.4 |
-| `v0.1.0` / `e64a09e` | Checkpoint — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.1.0 |
-| `v0.1.1` / `7ad5486` | Docs close-out — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.1.1 |
+| `v0.0.1`–`v0.1.1` | See prior rows / GitHub releases |
+| *(wip)* `v0.2.0` | TF+JSON closed loop scaffold under `terraform/` |
 
 ## 3. Repository state
 
-- Branch: `main` @ `7ad5486` (tag `v0.1.1`)
+- Branch: `main` (uncommitted scaffold until owner commits)
 - Remote: `https://github.com/BinHsu/truewatch-lab-first-mile.git`
 - Hooks: `core.hooksPath=.githooks`
 
 ## 4. Environment / system state
 
-- Site **id1**; Colima Docker OK.
-- Docs prefer `EMIT_MODE`; DataWay omits `--profile datakit`.
+- Site **id1**; set `LAB_ALERT_EMAIL`, `TRUEWATCH_ACCESS_TOKEN` / `OWL_TOKEN`,
+  `TRUEWATCH_END_POINT=https://id1-openapi.truewatch.com` in `.env` (gitignored).
 
-## 5. Commands already run
+## 5. Commands already run / next
+
+Scaffold written. Optional local:
 
 ```bash
-git tag -a v0.1.1 && git push origin HEAD v0.1.1
-gh release create v0.1.1   # → https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.1.1
+cd terraform && terraform init && terraform plan
+# apply only after owner confirm — workspace write
 ```
 
 ## 6. Test results
 
-- Unchanged from v0.1.0: payload UT in Docker `[VERIFIED]`; ingest paths prior `[VERIFIED]`.
+- Prior ingest / payload UT `[VERIFIED]`.
+- Upsert missing-uuid probe `[VERIFIED]` (design note).
+- TF plan/apply against id1: **not run** this segment.
 
 ## 7. Current blockers, in priority order
 
-1. Optional: Monitor + Dashboard (`AWAITING DECISION`) — Explorer-only is enough for the closed
-   ingest chapter.
+1. Owner: fill `.env` / `terraform.tfvars`, `terraform plan`, then `confirm` before `apply`.
+2. Validate checker after first apply (console export back into JSON if provider rewrites).
+3. Refine APM chart (console export) after metrics chart works.
 
 ## 8. AWAITING DECISION — owner only
 
-1. Monitor + Dashboard vs Explorer-only (thin closed loop vs stop at Explorer/OWL).
+1. Optional polish after first apply: monitor threshold / no-data behavior; APM chart.
+2. When to cut git tag **v0.2.0** (after successful apply + emit verify).
 
 ## 9. Exact next safe action
 
-Owner chooses Monitor/Dashboard scope, **or** leave lab at Explorer-only.
-
 ```bash
-bash scripts/run-emit-payload-tests.sh
+bash scripts/tf-with-env.sh init
+bash scripts/tf-with-env.sh plan
 ```
+
+Then owner types **`confirm`** before `bash scripts/tf-with-env.sh apply`.
 
 ## 10. Things that will bite you
 
-- Prefer `EMIT_MODE` in examples; do not teach `--no-deps` as no-DataKit.
-- Never commit `.env`.
+- Never commit `.env`, `*.tfstate`, `terraform.tfvars`.
+- `enable_monitor` defaults **true** (checker in `json/monitor.checker.json` — review before apply).
+- Losing local state → `terraform import` (runbook).

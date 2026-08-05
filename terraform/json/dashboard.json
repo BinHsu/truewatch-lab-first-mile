@@ -1,0 +1,67 @@
+{
+  "title": "lab-first-mile",
+  "main": {
+    "charts": [
+      {
+        "name": "Four-path ping (metrics)",
+        "type": "sequence",
+        "queries": [
+          {
+            "checked": true,
+            "datasource": "dataflux",
+            "qtype": "dql",
+            "query": {
+              "q": "M::`truewatch_lab_first_mile`:(last(`ping`)) { path = 'dataway' } [::auto]"
+            }
+          },
+          {
+            "checked": true,
+            "datasource": "dataflux",
+            "qtype": "dql",
+            "query": {
+              "q": "M::`truewatch_lab_first_mile`:(last(`ping`)) { path = 'datakit' } [::auto]"
+            }
+          },
+          {
+            "checked": true,
+            "datasource": "dataflux",
+            "qtype": "dql",
+            "query": {
+              "q": "M::`truewatch`:(last(`lab_first_mile_ping`)) { path = 'ddtrace' } [::auto]"
+            }
+          },
+          {
+            "checked": true,
+            "datasource": "dataflux",
+            "qtype": "dql",
+            "query": {
+              "q": "M::`otel_service`:(last(`truewatch_lab_first_mile.ping`)) { path = 'otel' } [::auto]"
+            }
+          }
+        ]
+      },
+      {
+        "name": "APM lab-emitter spans",
+        "type": "sequence",
+        "queries": [
+          {
+            "checked": true,
+            "datasource": "dataflux",
+            "qtype": "dql",
+            "query": {
+              "q": "T::`lab-emitter`:(count(`trace_id`)) { resource = 'lab.ddtrace.ping' } [::auto]"
+            }
+          },
+          {
+            "checked": true,
+            "datasource": "dataflux",
+            "qtype": "dql",
+            "query": {
+              "q": "T::`lab-emitter`:(count(`trace_id`)) { resource = 'lab.otel.ping' } [::auto]"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

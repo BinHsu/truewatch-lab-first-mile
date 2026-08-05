@@ -126,10 +126,14 @@ OWL / MCP rules: [`docs/truewatch-owl.md`](docs/truewatch-owl.md)
 
 ---
 
-## Still optional (not required for v0.1.x)
+## Still optional / next tags
 
-- One Monitor + one thin Dashboard (Dashboard via OWL CLI / console, **not** MCP) — `AWAITING DECISION` in handoff
-- OWL MCP in Cursor with Bearer auth
+- **v0.2.0 (in progress):** Monitor + Dashboard + email notify via **TF + JSON** (local state) —
+  [`terraform/`](terraform/), [`docs/runbooks/monitor-dashboard-tf.md`](docs/runbooks/monitor-dashboard-tf.md),
+  [ADR-0004](docs/ADR/0004-tf-json-closed-loop.md).  
+  **Forkers:** `bash scripts/tf-with-env.sh plan` (loads `.env`; Terraform will not source it alone).
+- **v0.3.0:** OWL MCP + Tobylike MCP
+- Dashboard writes remain **not** via MCP
 
 ---
 

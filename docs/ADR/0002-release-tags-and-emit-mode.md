@@ -23,6 +23,8 @@ need one entrypoint that selects the push path by flag or environment variable.
 | **v0.0.4** | OTLP → DataKit: **metric + span**; `EMIT_MODE=otel` ([ADR-0003](0003-otel-trace-path.md)) |
 | **v0.1.0** | Lab checkpoint: v0.0.1–v0.0.4 paths + portable payload UT in Docker + CI |
 | **v0.1.1** | Docs close-out: forker README flow, `EMIT_MODE`-first examples |
+| **v0.2.0** | Thin closed loop: Monitor + Dashboard + email notify via TF+JSON ([ADR-0004](0004-tf-json-closed-loop.md)) |
+| **v0.3.0** | MCP OWL + Tobylike ([ADR-0004](0004-tf-json-closed-loop.md)) |
 
 Unfinished modes must print `NOT-IMPLEMENTED` and exit **non-zero** (never fake OK).
 
@@ -87,6 +89,11 @@ Docs and Compose examples prefer **`EMIT_MODE=…`** over `--mode`. Keeping Data
 off for DataWay is done by **not** passing `--profile datakit` (DataKit is
 profile-gated; `emit` does not `depends_on` it). Do not document Compose
 `--no-deps` as “no DataKit” — that flag is unrelated and confusing.
+
+## Addendum — 2026-08-05 (v0.2.0 / v0.3.0 tags)
+
+Owner accepted thin closed-loop + MCP tags. Canonical decision:
+[ADR-0004](0004-tf-json-closed-loop.md).
 
 ## Re-check trigger
 
