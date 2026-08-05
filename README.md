@@ -13,10 +13,11 @@ Engineering security scaffold). Workload code is not written yet — start from
 2. [`docs/runbooks/owl-cli-credentials.md`](docs/runbooks/owl-cli-credentials.md) — console → `.env` (OWL §3–4, ingest Workspace Token/DataWay **§5**, OWL CLI **§6**)
 3. [`docs/runbooks/dataway-emit.md`](docs/runbooks/dataway-emit.md) — DataWay synthetic metric (v0.0.1)
 4. [`docs/runbooks/datakit-emit.md`](docs/runbooks/datakit-emit.md) — DataKit via Compose `:9529` (v0.0.2)
-5. [`docs/observability-glossary.md`](docs/observability-glossary.md) — Metrics/Logs/APM/RUM terms + TrueWatch console map
-6. `docs/truewatch-owl.md` — OWL / MCP / CLI product rules for this lab
-7. `AGENTS.md` — operating contract for every agent and human
-8. Copy `.env.example` → `.env` locally (never commit `.env`)
+5. [`docs/runbooks/ddtrace-emit.md`](docs/runbooks/ddtrace-emit.md) — StatsD + DDTrace via DataKit (v0.0.3)
+6. [`docs/observability-glossary.md`](docs/observability-glossary.md) — Metrics/Logs/APM/RUM terms + TrueWatch console map
+7. `docs/truewatch-owl.md` — OWL / MCP / CLI product rules for this lab
+8. `AGENTS.md` — operating contract for every agent and human
+9. Copy `.env.example` → `.env` locally (never commit `.env`)
 
 ```bash
 git config core.hooksPath .githooks   # if not already set after clone

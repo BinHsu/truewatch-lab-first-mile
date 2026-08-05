@@ -137,7 +137,7 @@ If someone says **spam** in this context, ask whether they mean **span**. Alert/
 |---|---|---|
 | v0.0.1 | `dataway` | Metrics via DataWay (**LP** `ping`) |
 | v0.0.2 | `datakit` | Metrics via DataKit (**LP** `ping`; optional `dk`) |
-| v0.0.3 | `ddtrace` | **StatsD metric + DDTrace span** (DataKit translates) |
+| v0.0.3 | `ddtrace` | **StatsD metric + DDTrace span** (DataKit translates) — see [`runbooks/ddtrace-emit.md`](runbooks/ddtrace-emit.md) |
 | v0.0.4 | `otel` | **OTLP metric + OTLP span** (DataKit translates) |
 
 See [ADR-0002](ADR/0002-release-tags-and-emit-mode.md), [ADR-0003](ADR/0003-otel-trace-path.md).

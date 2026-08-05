@@ -15,10 +15,12 @@
 - Runbook: `docs/runbooks/datakit-emit.md`
 - `.env.example`: `DATAKIT_URL` / `EMIT_MODE=datakit`
 
-## v0.0.3 — planned (DDTrace → DataKit)
+## v0.0.3 — 2026-08-05 (DDTrace + StatsD)
 
-- `EMIT_MODE=ddtrace`: **StatsD/DogStatsD metric + DDTrace span** (DataKit converts both)
-- See ADR-0003
+- `EMIT_MODE=ddtrace`: DogStatsD metric + DDTrace `/v0.4/traces` span
+- Compose: `ENV_DEFAULT_ENABLED_INPUTS=dk,ddtrace,statsd`; UDP `8125`
+- Emitter image pins `msgpack` (`requirements-emitter.txt`)
+- Runbook: `docs/runbooks/ddtrace-emit.md` (OWL-first, then Console)
 
 ## v0.0.4 — planned (OpenTelemetry → DataKit)
 

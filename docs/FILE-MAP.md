@@ -33,11 +33,12 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `CLAUDE.md` | Claude Code-only mechanics on top of `AGENTS.md`, which it imports on line 1. Permissions, delegation boundary, conflict resolution. Holds no shared policy. | Claude Code sessions |
 | `README.md` | What this lab is (TrueWatch first-mile), start-here pointers, and that status lives only in handoff. States no project status by design. | Forkers, first-time readers |
 | `CHANGELOG.md` | Release notes for git tags v0.0.1+ (DataWay / DataKit / DDTrace slices). | Anyone cutting or consuming a release tag |
-| `docker-compose.yml` | Compose entry: `emit` (always) + optional `datakit` service under profile `datakit` (v0.0.2). | Forkers preferring a clean Docker host |
+| `docker-compose.yml` | Compose: `emit` + optional `datakit` (profile) with `dk,ddtrace,statsd` (v0.0.2/v0.0.3). | Forkers preferring a clean Docker host |
 | `SECURITY.md` | Security ground rules an agent must not guess at: secrets, untrusted input, external actions, dependencies. | Reviewers; anyone touching secrets or external systems |
 | `PRODUCT_SENSE.md` | The product red line that hidden destructive actions are a defect, plus the preview/confirm/log/abort protocol. Restates the protocol also given in `AGENTS.md` §10. | Any agent before a destructive command |
 | `.gitignore` | Declares what must never be committed. Note the git gotcha recorded in `AGENTS.md` §7: ignore `dir/*`, not `dir/`, or a negation cannot re-include a member. | Anyone adding a file type that might carry secrets |
-| `.env.example` | Names of local env vars for OWL API keys, Workspace Token, and DataWay/DK_DATAWAY; copy to `.env` (gitignored). Never real secrets. | Anyone wiring ingest or OWL |
+| `.env.example` | Local env var names (OWL, Workspace Token, DataWay/DK_DATAWAY, DataKit/StatsD); copy to `.env`. | Anyone wiring ingest or OWL |
+| `requirements-emitter.txt` | Pinned pip deps for emitter image (`msgpack` for DDTrace). | Compose emit build; host optional for ddtrace |
 | `docs/FILE-MAP.md` | This file. The exhaustive manifest. | Anyone about to create a new file |
 
 ## `.claude/` — Claude Code harness
@@ -79,11 +80,12 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `docs/runbooks/owl-cli-credentials.md` | Credentials runbook: Open API Key → OWL `.env` (§3–4), Workspace Token + DataWay (§5 W1–W5), OWL CLI install/verify (§6 A–G). | Forkers wiring OWL or ingest credentials |
 | `docs/runbooks/dataway-emit.md` | Forker steps to dry-run and POST via DataWay (`scripts/emit.py --mode dataway` or Compose), then find it in Explorer. | Anyone proving ADR-0001 DataWay path |
 | `docs/runbooks/datakit-emit.md` | Forker steps for Compose DataKit emit; documents lab series vs side-effect measurement `dk` (self-metrics). | Anyone proving ADR-0001 DataKit path |
+| `docs/runbooks/ddtrace-emit.md` | Forker steps for StatsD metric + DDTrace span via DataKit; OWL-first verify then Console. | Anyone proving v0.0.3 / ADR-0003 |
 | `docs/ADR/INDEX.md` | Routes decision records by reader goal. | Anyone looking for why a lab choice was made |
 | `docs/ADR/0001-three-ingest-paths.md` | Accepted decision: lab exercises DataKit, DataWay direct write, and DDTrace→DataKit (not Datadog Agent→DataKit). | Anyone implementing or scoping ingest emitters |
 | `docs/ADR/0002-release-tags-and-emit-mode.md` | Accepted: tags v0.0.1–v0.0.4, `EMIT_MODE` / `--mode`, Docker-first preference. | Anyone cutting releases or adding emit modes |
 | `docs/ADR/0003-otel-trace-path.md` | Accepted: v0.0.3/v0.0.4 each emit protocol-native **metric + span** via DataKit. | Anyone implementing ddtrace/otel or comparing to LP ping |
-| `docker/Dockerfile.emitter` | Alpine Python image running `scripts/emit.py` for Compose. | Compose build for `emit` service |
+| `docker/Dockerfile.emitter` | Alpine Python emit image; installs `requirements-emitter.txt` then copies emit scripts. | Compose build for `emit` service |
 | `docs/validation/evidence/README.md` | The fixed artifact format for a Group B observation: header fields, redaction rules, worked template. | Anyone recording a manual or instrumented verification |
 | `docs/validation/evidence/REQUIRED.json` | Machine-readable manifest of which artifacts each phase must produce, plus the field, tag and forbidden-pattern configuration the validator enforces. Authoritative — the validator rejects artifacts it does not list. | The validator; anyone adding a phase or an artifact |
 
@@ -100,7 +102,7 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `scripts/emit.py` | Unified emitter entry: `--mode` / `EMIT_MODE` dispatches to mode scripts. | Anyone emitting lab telemetry |
 | `scripts/emit_dataway.py` | DataWay mode (v0.0.1): synthetic metric/log to `/v1/write/…`; redacts token; lab User-Agent (avoids CF 1010). | Forkers / agents proving DataWay ingest |
 | `scripts/emit_datakit.py` | DataKit mode (v0.0.2): synthetic metric/log to local DataKit `/v1/write/…` (`DATAKIT_URL`, default `:9529`). | Forkers / agents proving DataKit ingest |
-| `scripts/emit_ddtrace.py` | DDTrace mode stub until v0.0.3 — prints `NOT-IMPLEMENTED`, exits 2. | Callers of `EMIT_MODE=ddtrace` before that release |
+| `scripts/emit_ddtrace.py` | DDTrace mode (v0.0.3): DogStatsD metric + `/v0.4/traces` span (needs msgpack). | Forkers / agents proving DDTrace ingest |
 | `scripts/emit_otel.py` | OTel mode stub until v0.0.4 — prints `NOT-IMPLEMENTED`, exits 2. | Callers of `EMIT_MODE=otel` before that release |
 
 ## `tests/` — toolchain-independent checks
