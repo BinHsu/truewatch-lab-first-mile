@@ -8,9 +8,8 @@
 > do the thing. Then update with the result. A post-hoc-only handoff is worthless precisely when it
 > is needed. See `AGENTS.md` §4.
 
-**Last updated:** 2026-08-05 — **Shipping v0.0.4** (OTLP metric + span; emit `--count`/`--interval`).
-About to commit, tag `v0.0.4`, push, and create GitHub release. Resume: verify tag URL in this
-file after release; then optional payload UT / GHA.
+**Last updated:** 2026-08-05 — **v0.0.4 released** (`d1cf739`). Four ingest paths tagged through
+OTLP. Optional next: payload unit tests + GHA (owner had deferred until Console; Console done).
 
 ---
 
@@ -18,76 +17,70 @@ file after release; then optional payload UT / GHA.
 
 1. `docs/handoff/CURRENT.md` (this file)
 2. `docs/runbooks/otel-emit.md`
-3. `docs/ADR/0002-release-tags-and-emit-mode.md` (spacing addendum)
-4. `docs/ADR/0003-otel-trace-path.md`
-5. `CHANGELOG.md` / `README.md`
+3. `docs/ADR/0002-release-tags-and-emit-mode.md` / `docs/ADR/0003-otel-trace-path.md`
+4. `CHANGELOG.md` / `README.md`
+5. `AGENTS.md` / `docs/FILE-MAP.md`
 
 ## 2. Last completed milestone
 
-**v0.0.3** tagged. **v0.0.4** implementation + OWL + owner Console `[VERIFIED]` — cutting tag now.
+**v0.0.4 — OTLP metric + span** (tagged + GitHub release). Owner Console `[VERIFIED]`.
+Also: spaced repeats on `emit.py` (`--count` / `--interval`, default 5s).
 
 | Tag / commit | Content |
 |---|---|
 | `v0.0.1` / `6be3e7f` | DataWay — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.1 |
 | `v0.0.2` / `e287eb7` | DataKit — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.2 |
 | `v0.0.3` / `3307a25` | DDTrace — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.3 |
-| *(cutting)* `v0.0.4` | OTLP metric + span + emit spacing |
+| `v0.0.4` / `d1cf739` | OTel — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.4 |
 
 ## 3. Repository state
 
-- Branch: `main`
+- Branch: `main` (track `origin/main`)
 - Remote: `https://github.com/BinHsu/truewatch-lab-first-mile.git`
 - Hooks: `core.hooksPath=.githooks`
+- Tag `v0.0.4` → `d1cf739`
 
 ## 4. Environment / system state
 
 - Site **id1**; Colima Docker OK.
-- DataKit: `dk,ddtrace,statsd,opentelemetry`; ports 9529 + 8125/udp.
-- Emitter: `msgpack==1.1.1`, `opentelemetry-proto==1.34.1`.
-- `emit.py`: default interval **5s** between `--count` shots.
+- DataKit: `dk,ddtrace,statsd,opentelemetry`; 9529 + 8125/udp.
+- Emitter: `msgpack` + `opentelemetry-proto==1.34.1`.
 
-## 5. Commands already run / about to run
+## 5. Commands already run
 
 ```bash
-# already verified
-docker compose --env-file .env run --rm -e EMIT_MODE=otel emit
-# metrics_post=OK traces_post=OK; OWL M::otel_service + T lab.otel.ping
-# Owner Console: metric value 1 @ 10:47; two APM spans matching OWL trace_ids
-
-# shipping
-git add … && git commit && git tag -a v0.0.4 && git push origin HEAD v0.0.4
+git tag -a v0.0.4 d1cf739 …
+git push origin HEAD v0.0.4
 gh release create v0.0.4 …
+# https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.4
 ```
 
 ## 6. Test results
 
-- Live OTLP HTTP 200: **pass** `[VERIFIED]`
-- OWL `M::otel_service` / `truewatch_lab_first_mile.ping` `path=otel`: **pass** `[VERIFIED]`
-- OWL `T` `resource=lab.otel.ping` `source=opentelemetry`: **pass** `[VERIFIED]`
-- Owner Console Metrics + APM: **pass** `[VERIFIED]` (2026-08-05 ~10:47+08)
-- Spaced `--count`/`--interval`: code + dry-run dispatcher `[VERIFIED]`; live spaced re-emit optional
+- Live OTLP + OWL M+T: **pass** `[VERIFIED]`
+- Owner Console Metrics + APM (`lab.otel.ping`): **pass** `[VERIFIED]` 2026-08-05 ~10:47+08
+- Emit spacing dispatcher dry-run: **pass** `[VERIFIED]`
 
 ## 7. Current blockers, in priority order
 
-1. Finish tag + release + record URL here.
-2. Optional: `tests/test_emit_payloads.py` + GHA (owner previously deferred until Console — Console done).
+1. None for ingest path slices v0.0.1–v0.0.4.
+2. Optional: `tests/test_emit_payloads.py` + wire into GitHub Actions.
 
 ## 8. AWAITING DECISION — owner only
 
 1. Monitor + Dashboard vs Explorer-only.
-2. Whether to start payload UT + GHA next.
+2. Start payload UT + GHA now?
 
 ## 9. Exact next safe action
 
-If this commit lands but tag/push dies: tag the v0.0.4 impl commit, `git push origin v0.0.4`,
-`gh release create v0.0.4`, then record SHA/URL in this file.
+Owner: decide Monitor/Dashboard and/or ask for payload contract tests + CI.
 
 ```bash
-docker compose --env-file .env run --rm -e EMIT_MODE=otel emit --count 2
+docker compose --env-file .env run --rm -e EMIT_MODE=otel emit --count 2 --dry-run
 ```
 
 ## 10. Things that will bite you
 
-- OTLP → `M::otel_service`, quote dotted field `truewatch_lab_first_mile.ping`.
-- Sub-second repeats look like one Metrics point — use `--count 2` (5s default).
+- OTLP → `M::otel_service`, quote `truewatch_lab_first_mile.ping`.
+- Use `--count 2` for distinct Metrics UI points (5s default gap).
 - Never commit `.env`.
