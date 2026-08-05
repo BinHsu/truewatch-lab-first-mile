@@ -8,8 +8,8 @@
 > do the thing. Then update with the result. A post-hoc-only handoff is worthless precisely when it
 > is needed. See `AGENTS.md` §4.
 
-**Last updated:** 2026-08-05 — **Shipping v0.1.1** docs close-out (forker README + EMIT_MODE-first).
-First-mile ingest chapter formally wrapped; optional next remains Monitor / Dashboard.
+**Last updated:** 2026-08-05 — **v0.1.1 released** (`7ad5486`). First-mile ingest chapter closed
+(paths + UT/CI + forker docs). Optional next: Monitor / Dashboard.
 
 ---
 
@@ -22,7 +22,7 @@ First-mile ingest chapter formally wrapped; optional next remains Monitor / Dash
 
 ## 2. Last completed milestone
 
-**v0.1.0** lab checkpoint. **v0.1.1** = docs close-out (cutting now).
+**v0.1.1 — Docs close-out** (tagged + GitHub release).
 
 | Tag / commit | Content |
 |---|---|
@@ -31,11 +31,11 @@ First-mile ingest chapter formally wrapped; optional next remains Monitor / Dash
 | `v0.0.3` / `3307a25` | DDTrace — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.3 |
 | `v0.0.4` / `d1cf739` | OTel — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.4 |
 | `v0.1.0` / `e64a09e` | Checkpoint — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.1.0 |
-| *(cutting)* `v0.1.1` | Docs close-out: README flow + EMIT_MODE-first |
+| `v0.1.1` / `7ad5486` | Docs close-out — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.1.1 |
 
 ## 3. Repository state
 
-- Branch: `main`
+- Branch: `main` @ `7ad5486` (tag `v0.1.1`)
 - Remote: `https://github.com/BinHsu/truewatch-lab-first-mile.git`
 - Hooks: `core.hooksPath=.githooks`
 
@@ -44,11 +44,11 @@ First-mile ingest chapter formally wrapped; optional next remains Monitor / Dash
 - Site **id1**; Colima Docker OK.
 - Docs prefer `EMIT_MODE`; DataWay omits `--profile datakit`.
 
-## 5. Commands already run / about to run
+## 5. Commands already run
 
 ```bash
 git tag -a v0.1.1 && git push origin HEAD v0.1.1
-gh release create v0.1.1 …
+gh release create v0.1.1   # → https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.1.1
 ```
 
 ## 6. Test results
@@ -57,16 +57,16 @@ gh release create v0.1.1 …
 
 ## 7. Current blockers, in priority order
 
-1. Finish v0.1.1 tag + release + record URL here.
-2. Optional: Monitor + Dashboard (`AWAITING DECISION`).
+1. Optional: Monitor + Dashboard (`AWAITING DECISION`) — Explorer-only is enough for the closed
+   ingest chapter.
 
 ## 8. AWAITING DECISION — owner only
 
-1. Monitor + Dashboard vs Explorer-only.
+1. Monitor + Dashboard vs Explorer-only (thin closed loop vs stop at Explorer/OWL).
 
 ## 9. Exact next safe action
 
-Tag/push/release v0.1.1, then record SHA/URL in this file.
+Owner chooses Monitor/Dashboard scope, **or** leave lab at Explorer-only.
 
 ```bash
 bash scripts/run-emit-payload-tests.sh

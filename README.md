@@ -126,7 +126,7 @@ OWL / MCP rules: [`docs/truewatch-owl.md`](docs/truewatch-owl.md)
 
 ---
 
-## Still optional (not required for v0.1.0)
+## Still optional (not required for v0.1.x)
 
 - One Monitor + one thin Dashboard (Dashboard via OWL CLI / console, **not** MCP) — `AWAITING DECISION` in handoff
 - OWL MCP in Cursor with Bearer auth
