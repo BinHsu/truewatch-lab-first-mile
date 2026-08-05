@@ -8,21 +8,21 @@
 > do the thing. Then update with the result. A post-hoc-only handoff is worthless precisely when it
 > is needed. See `AGENTS.md` §4.
 
-**Last updated:** 2026-08-05 — **Shipping v0.1.0** lab checkpoint (four ingest paths + portable
-payload UT/CI). About to commit docs, tag, push, GitHub release.
+**Last updated:** 2026-08-05 — **v0.1.0 released** (`e64a09e`). First-mile lab checkpoint:
+four ingest paths + portable payload UT/CI. Optional next: Monitor / Dashboard.
 
 ---
 
 ## 1. Read these first
 
 1. `docs/handoff/CURRENT.md` (this file)
-2. `CHANGELOG.md` (v0.1.0)
-3. `docs/ADR/0002-release-tags-and-emit-mode.md`
-4. `scripts/run-emit-payload-tests.sh`
+2. `CHANGELOG.md` / `README.md`
+3. `scripts/run-emit-payload-tests.sh`
+4. `docs/ADR/0002-release-tags-and-emit-mode.md`
 
 ## 2. Last completed milestone
 
-**v0.0.4** tagged earlier. **v0.1.0** = summary of first-mile lab + UT/CI (cutting now).
+**v0.1.0 — First-mile lab checkpoint** (tagged + GitHub release).
 
 | Tag / commit | Content |
 |---|---|
@@ -30,36 +30,38 @@ payload UT/CI). About to commit docs, tag, push, GitHub release.
 | `v0.0.2` / `e287eb7` | DataKit — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.2 |
 | `v0.0.3` / `3307a25` | DDTrace — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.3 |
 | `v0.0.4` / `d1cf739` | OTel — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.4 |
-| *(cutting)* `v0.1.0` | Checkpoint: paths + Docker payload UT + CI |
+| `v0.1.0` / `e64a09e` | Checkpoint — https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.1.0 |
 
 ## 3. Repository state
 
-- Branch: `main`
+- Branch: `main` (track `origin/main`)
 - Remote: `https://github.com/BinHsu/truewatch-lab-first-mile.git`
 - Hooks: `core.hooksPath=.githooks`
+- Tag `v0.1.0` → `e64a09e`
 
 ## 4. Environment / system state
 
 - Site **id1**; Colima Docker OK.
-- Payload UT: `bash scripts/run-emit-payload-tests.sh` only (no host pip).
+- Payload UT: Docker only via `scripts/run-emit-payload-tests.sh`.
 
-## 5. Commands already run / about to run
+## 5. Commands already run
 
 ```bash
-bash scripts/run-emit-payload-tests.sh   # already OK
-git tag -a v0.1.0 && git push origin HEAD v0.1.0
+git tag -a v0.1.0 e64a09e …
+git push origin HEAD v0.1.0
 gh release create v0.1.0 …
+# https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.1.0
 ```
 
 ## 6. Test results
 
-- Ingest v0.0.1–v0.0.4: OWL and/or Console as recorded in prior handoffs `[VERIFIED]`
-- Payload UT in Docker: **pass** `[VERIFIED]` (9 tests)
+- Ingest paths v0.0.1–v0.0.4: prior OWL/Console `[VERIFIED]` as recorded.
+- Payload UT in Docker: **pass** `[VERIFIED]` (9 tests).
 
 ## 7. Current blockers, in priority order
 
-1. Finish v0.1.0 tag + release + record URL here.
-2. Optional next scope: Monitor + Dashboard (AWAITING DECISION).
+1. None for the first-mile emit + contract checkpoint.
+2. Optional: Monitor + Dashboard.
 
 ## 8. AWAITING DECISION — owner only
 
@@ -67,7 +69,7 @@ gh release create v0.1.0 …
 
 ## 9. Exact next safe action
 
-If interrupted after commit but before tag: tag the v0.1.0 commit, push, `gh release create`.
+Owner: decide Monitor/Dashboard, or next lab goal beyond first-mile ingest.
 
 ```bash
 bash scripts/run-emit-payload-tests.sh
@@ -75,5 +77,5 @@ bash scripts/run-emit-payload-tests.sh
 
 ## 10. Things that will bite you
 
-- Do not retag v0.0.4; checkpoint is **v0.1.0**.
+- Portable default: Git + Docker; do not treat host pip as the official path.
 - Never commit `.env`.
