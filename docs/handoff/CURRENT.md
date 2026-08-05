@@ -8,23 +8,22 @@
 > do the thing. Then update with the result. A post-hoc-only handoff is worthless precisely when it
 > is needed. See `AGENTS.md` §4.
 
-**Last updated:** 2026-08-05 — **v0.0.4 released** (`d1cf739`). Four ingest paths tagged through
-OTLP. Optional next: payload unit tests + GHA (owner had deferred until Console; Console done).
+**Last updated:** 2026-08-05 — **Emit payload UT + CI landed** (`tests/test_emit_payloads.py`,
+in-process DataWay token redact). Also: simplified `emit.py` count/interval defaults (no `_env_*`
+helpers). v0.0.1–v0.0.4 tags unchanged.
 
 ---
 
 ## 1. Read these first
 
 1. `docs/handoff/CURRENT.md` (this file)
-2. `docs/runbooks/otel-emit.md`
-3. `docs/ADR/0002-release-tags-and-emit-mode.md` / `docs/ADR/0003-otel-trace-path.md`
+2. `tests/test_emit_payloads.py`
+3. `docs/runbooks/otel-emit.md` / `docs/ADR/0002-release-tags-and-emit-mode.md`
 4. `CHANGELOG.md` / `README.md`
-5. `AGENTS.md` / `docs/FILE-MAP.md`
 
 ## 2. Last completed milestone
 
-**v0.0.4 — OTLP metric + span** (tagged + GitHub release). Owner Console `[VERIFIED]`.
-Also: spaced repeats on `emit.py` (`--count` / `--interval`, default 5s).
+**v0.0.4 released** + **payload contract tests in CI**.
 
 | Tag / commit | Content |
 |---|---|
@@ -35,52 +34,47 @@ Also: spaced repeats on `emit.py` (`--count` / `--interval`, default 5s).
 
 ## 3. Repository state
 
-- Branch: `main` (track `origin/main`)
+- Branch: `main`
 - Remote: `https://github.com/BinHsu/truewatch-lab-first-mile.git`
 - Hooks: `core.hooksPath=.githooks`
-- Tag `v0.0.4` → `d1cf739`
 
 ## 4. Environment / system state
 
-- Site **id1**; Colima Docker OK.
-- DataKit: `dk,ddtrace,statsd,opentelemetry`; 9529 + 8125/udp.
-- Emitter: `msgpack` + `opentelemetry-proto==1.34.1`.
+- Unchanged lab host (id1, Colima).
+- CI installs `requirements-emitter.txt` before payload unittest.
 
 ## 5. Commands already run
 
 ```bash
-git tag -a v0.0.4 d1cf739 …
-git push origin HEAD v0.0.4
-gh release create v0.0.4 …
-# https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.4
+python3 -m pip install -r requirements-emitter.txt
+python3 -m unittest tests.test_emit_payloads -v
+# Ran 9 tests — OK
 ```
 
 ## 6. Test results
 
-- Live OTLP + OWL M+T: **pass** `[VERIFIED]`
-- Owner Console Metrics + APM (`lab.otel.ping`): **pass** `[VERIFIED]` 2026-08-05 ~10:47+08
-- Emit spacing dispatcher dry-run: **pass** `[VERIFIED]`
+- `tests.test_emit_payloads`: **pass** `[VERIFIED]` (9 tests), including dry-run stdout
+  must not contain canary token.
 
 ## 7. Current blockers, in priority order
 
-1. None for ingest path slices v0.0.1–v0.0.4.
-2. Optional: `tests/test_emit_payloads.py` + wire into GitHub Actions.
+1. None for ingest paths / payload contracts.
+2. Optional: Monitor + Dashboard (still AWAITING DECISION).
 
 ## 8. AWAITING DECISION — owner only
 
 1. Monitor + Dashboard vs Explorer-only.
-2. Start payload UT + GHA now?
 
 ## 9. Exact next safe action
 
-Owner: decide Monitor/Dashboard and/or ask for payload contract tests + CI.
-
 ```bash
-docker compose --env-file .env run --rm -e EMIT_MODE=otel emit --count 2 --dry-run
+python3 -m unittest tests.test_emit_payloads -v
 ```
+
+Or owner decides Monitor/Dashboard scope.
 
 ## 10. Things that will bite you
 
-- OTLP → `M::otel_service`, quote `truewatch_lab_first_mile.ping`.
-- Use `--count 2` for distinct Metrics UI points (5s default gap).
+- OTLP → `M::otel_service`; quote dotted field names in DQL.
+- `--count 2` for distinct Metrics UI points (5s default).
 - Never commit `.env`.

@@ -58,7 +58,7 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 
 | Path | What it is for | Who reads it |
 |---|---|---|
-| `.github/workflows/security-checks.yml` | The toolchain-independent check suite on every push, PR and daily: secret scan, semgrep, tool-registry audit, security benchmark, evidence-artifact validator and its self-test. Dependency-audit and lint steps are present but commented out, awaiting a language stack. | CI; anyone diagnosing a red build |
+| `.github/workflows/security-checks.yml` | The toolchain-independent check suite on every push, PR and daily: secret scan, semgrep, tool-registry audit, security benchmark, evidence-artifact validator and its self-test, emit payload contracts. Dependency-audit and lint steps are present but commented out, awaiting a language stack. | CI; anyone diagnosing a red build |
 
 ## `.semgrep/` — promoted review rules
 
@@ -111,6 +111,7 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | Path | What it is for | Who reads it |
 |---|---|---|
 | `tests/test_evidence_artifacts.py` | Validates the record of every Group B verification: header completeness, evidence tag, `result`, forbidden content, per-artifact content rules. Passes vacuously with zero artifacts; `--require <phase>` turns it into a phase gate; `--self-test` proves the validator can still fail. Pure stdlib. | CI; anyone closing a phase gate |
+| `tests/test_emit_payloads.py` | In-process contracts: LP/StatsD/OTLP payload shapes; DataWay dry-run must not print workspace token (`token=***`). | CI (`security-checks.yml`); anyone changing emit scripts |
 
 ## `tools/` — tool layer
 

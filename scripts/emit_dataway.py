@@ -105,7 +105,7 @@ def post_lp(url: str, body: str, timeout: float = 30.0) -> tuple[int, str]:
         return e.code, raw
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--dry-run",
@@ -123,7 +123,7 @@ def main() -> int:
         default=1.0,
         help="Metric field ping= (default 1.0)",
     )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     ts_ns = time.time_ns()
     metric_body = line_protocol_metric(args.value, ts_ns)

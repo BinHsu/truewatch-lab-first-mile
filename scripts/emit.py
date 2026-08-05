@@ -8,14 +8,14 @@ Modes (ADR-0001 / ADR-0002 / ADR-0003):
   otel     — OTLP span + OTLP metric → DataKit (v0.0.4)
 
 Repeat / spacing (all modes):
-  --count N       emit N times (default 1; env EMIT_COUNT)
-  --interval SEC  sleep between repeats (default 5; env EMIT_INTERVAL_SEC)
+  --count N       emit N times (default 1; env EMIT_COUNT overrides if set)
+  --interval SEC  sleep between repeats (default 5; env EMIT_INTERVAL_SEC if set)
   Skips sleep on --dry-run and after the last shot.
 
 Usage:
   set -a && source .env && set +a
   python3 scripts/emit.py --mode dataway
-  python3 scripts/emit.py --mode otel --count 2          # Console-friendly spacing
+  python3 scripts/emit.py --mode otel --count 2
   EMIT_MODE=otel EMIT_COUNT=2 python3 scripts/emit.py
 """
 
@@ -38,29 +38,9 @@ MODE_SCRIPTS = {
 }
 
 # Lab convention: Metrics Explorer often buckets by second; sub-second repeats
-# collapse visually (value=1 looks like "one point"). Five seconds separates shots.
+# collapse visually. Five seconds separates shots.
 DEFAULT_INTERVAL_SEC = 5.0
 DEFAULT_COUNT = 1
-
-
-def _env_int(name: str, default: int) -> int:
-    raw = (os.environ.get(name) or "").strip()
-    if not raw:
-        return default
-    try:
-        return int(raw)
-    except ValueError as e:
-        raise SystemExit(f"{name} must be an integer, got {raw!r}") from e
-
-
-def _env_float(name: str, default: float) -> float:
-    raw = (os.environ.get(name) or "").strip()
-    if not raw:
-        return default
-    try:
-        return float(raw)
-    except ValueError as e:
-        raise SystemExit(f"{name} must be a number, got {raw!r}") from e
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -76,20 +56,21 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--count",
         type=int,
-        default=None,
-        help=f"How many emit shots (default: EMIT_COUNT or {DEFAULT_COUNT})",
+        default=DEFAULT_COUNT,
+        help=f"How many emit shots (default: {DEFAULT_COUNT})",
     )
     parser.add_argument(
         "--interval",
         type=float,
-        default=None,
+        default=DEFAULT_INTERVAL_SEC,
         metavar="SEC",
         help=(
             "Seconds between shots when count>1 "
-            f"(default: EMIT_INTERVAL_SEC or {DEFAULT_INTERVAL_SEC:g})"
+            f"(default: {DEFAULT_INTERVAL_SEC:g})"
         ),
     )
-    args, passthrough = parser.parse_known_args(argv)
+    argv_list = list(argv) if argv is not None else sys.argv[1:]
+    args, passthrough = parser.parse_known_args(argv_list)
 
     mode = (args.mode or os.environ.get("EMIT_MODE") or "dataway").strip().lower()
     if mode not in MODE_SCRIPTS:
@@ -100,12 +81,15 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 2
 
-    count = args.count if args.count is not None else _env_int("EMIT_COUNT", DEFAULT_COUNT)
-    interval = (
-        args.interval
-        if args.interval is not None
-        else _env_float("EMIT_INTERVAL_SEC", DEFAULT_INTERVAL_SEC)
-    )
+    # CLI > env > argparse default. Env only when the CLI flag is absent.
+    # Missing env → keep default. Bad env string → int()/float() raise.
+    count = args.count
+    interval = args.interval
+    if "EMIT_COUNT" in os.environ and "--count" not in argv_list:
+        count = int(os.environ["EMIT_COUNT"].strip())
+    if "EMIT_INTERVAL_SEC" in os.environ and "--interval" not in argv_list:
+        interval = float(os.environ["EMIT_INTERVAL_SEC"].strip())
+
     if count < 1:
         print("emit_count must be >= 1", file=sys.stderr)
         return 2

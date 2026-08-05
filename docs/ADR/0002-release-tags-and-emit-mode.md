@@ -63,9 +63,10 @@ spacing** on `scripts/emit.py` for all modes:
 
 | Knob | Default | Env |
 |---|---|---|
-| `--count` | `1` | `EMIT_COUNT` |
-| `--interval` | **`5` seconds** | `EMIT_INTERVAL_SEC` |
+| `--count` | `1` | `EMIT_COUNT` (only if `--count` not passed) |
+| `--interval` | **`5` seconds** | `EMIT_INTERVAL_SEC` (only if `--interval` not passed) |
 
+Precedence: CLI flag → env (if set) → default. Bad env values raise on cast.
 Mode scripts stay single-shot. The dispatcher sleeps between shots (skipped on
 `--dry-run`). Use `--count 2` (or higher) when proving Metrics Explorer shows
 distinct points; protocol proof still works with `count=1`.
