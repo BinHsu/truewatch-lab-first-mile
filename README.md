@@ -31,7 +31,8 @@ Credentials: [`docs/runbooks/owl-cli-credentials.md`](docs/runbooks/owl-cli-cred
 
 ## Four ingest paths (the lab’s core)
 
-One emitter entrypoint: `scripts/emit.py` (`--mode` / `EMIT_MODE`).  
+One emitter entrypoint: `scripts/emit.py`. Prefer **`EMIT_MODE`** (env) — same shape as
+Compose / cloud. Optional `--mode` still overrides if you pass it.
 Modes are **not** four ways to send the same LP `ping` — wire formats differ.
 
 ```text
@@ -86,18 +87,20 @@ bash scripts/run-emit-payload-tests.sh
 # Load credentials (never commit .env)
 set -a && source .env && set +a
 
-# --dry-run: print assembled URL/payloads only (no POST / no UDP).
-# Works for all four modes: dataway | datakit | ddtrace | otel
-#   … emit --mode dataway --dry-run
-#   … emit --mode datakit --dry-run
-#   … -e EMIT_MODE=ddtrace emit --dry-run
-#   … -e EMIT_MODE=otel emit --dry-run
+# Mode selection: set EMIT_MODE (compose/K8s-style). Optional CLI --mode still works
+# but docs prefer the env form.
+#
+# --dry-run: print assembled URL/payloads only (no POST / no UDP). All four modes:
+#   docker compose --env-file .env run --rm -e EMIT_MODE=dataway emit --dry-run
+#   docker compose --env-file .env run --rm -e EMIT_MODE=datakit emit --dry-run
+#   docker compose --env-file .env run --rm -e EMIT_MODE=ddtrace emit --dry-run
+#   docker compose --env-file .env run --rm -e EMIT_MODE=otel emit --dry-run
 
-# Live verify — DataWay (no DataKit container)
-python3 scripts/emit.py --mode dataway
-docker compose --env-file .env run --rm --no-deps emit --mode dataway
+# Live verify — DataWay only (do NOT use --profile datakit → no DataKit container)
+EMIT_MODE=dataway python3 scripts/emit.py
+docker compose --env-file .env run --rm -e EMIT_MODE=dataway emit
 
-# Live verify — DataKit / DDTrace / OTel (start DataKit first)
+# Live verify — DataKit / DDTrace / OTel (explicitly enable the datakit profile)
 docker compose --profile datakit --env-file .env up -d datakit
 docker compose --env-file .env build emit
 docker compose --env-file .env run --rm -e EMIT_MODE=datakit emit

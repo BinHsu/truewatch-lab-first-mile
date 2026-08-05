@@ -62,14 +62,13 @@ see [Extra measurement: `dk`](#extra-measurement-dk-datakit-self-metrics) below.
 Host Python (DataKit published on localhost:9529):
 
 ```bash
-DATAKIT_URL=http://127.0.0.1:9529 python3 scripts/emit.py --mode datakit --dry-run
+DATAKIT_URL=http://127.0.0.1:9529 EMIT_MODE=datakit python3 scripts/emit.py --dry-run
 ```
 
 Compose (emitter reaches service name `datakit`):
 
 ```bash
 docker compose --env-file .env run --rm -e EMIT_MODE=datakit emit --dry-run
-# or: … emit --mode datakit --dry-run
 ```
 
 Expect `emit_mode=datakit`, `metric_url=…/v1/write/metric`, measurement
@@ -79,8 +78,8 @@ Expect `emit_mode=datakit`, `metric_url=…/v1/write/metric`, measurement
 
 ```bash
 # Host:
-DATAKIT_URL=http://127.0.0.1:9529 python3 scripts/emit.py --mode datakit
-DATAKIT_URL=http://127.0.0.1:9529 python3 scripts/emit.py --mode datakit --also-log
+DATAKIT_URL=http://127.0.0.1:9529 EMIT_MODE=datakit python3 scripts/emit.py
+DATAKIT_URL=http://127.0.0.1:9529 EMIT_MODE=datakit python3 scripts/emit.py --also-log
 # Compose:
 docker compose --env-file .env run --rm -e EMIT_MODE=datakit emit
 # Distinct Metrics points: --count 2 (5s default interval via emit.py)
@@ -182,7 +181,7 @@ Synthetic demo data only.
 |---|---|
 | `DK_DATAWAY` | Required for Compose `datakit` → maps to `ENV_DATAWAY` |
 | `DATAKIT_URL` | Emitter target; host default `http://127.0.0.1:9529`; Compose default `http://datakit:9529` |
-| `EMIT_MODE` | Set to `datakit` or pass `--mode datakit` |
+| `EMIT_MODE` | Set to `datakit` (preferred; same as Compose `-e EMIT_MODE=…`) |
 
 ---
 

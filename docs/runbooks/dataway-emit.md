@@ -39,15 +39,14 @@ test -n "${TRUEWATCH_WORKSPACE_TOKEN}" && echo "workspace_token=set" || echo "MI
 Host:
 
 ```bash
-python3 scripts/emit.py --mode dataway --dry-run
-# equivalent: EMIT_MODE=dataway python3 scripts/emit.py --dry-run
+EMIT_MODE=dataway python3 scripts/emit.py --dry-run
 # or call the mode script: python3 scripts/emit_dataway.py --dry-run
 ```
 
-Compose:
+Compose (omit `--profile datakit` → no DataKit container):
 
 ```bash
-docker compose --env-file .env run --rm emit --mode dataway --dry-run
+docker compose --env-file .env run --rm -e EMIT_MODE=dataway emit --dry-run
 ```
 
 Expect `emit_mode=dataway`, redacted URL (`token=***`), measurement
@@ -56,10 +55,10 @@ Expect `emit_mode=dataway`, redacted URL (`token=***`), measurement
 ### 3. Live emit
 
 ```bash
-python3 scripts/emit.py --mode dataway
-python3 scripts/emit.py --mode dataway --also-log
+EMIT_MODE=dataway python3 scripts/emit.py
+EMIT_MODE=dataway python3 scripts/emit.py --also-log
 # Compose:
-docker compose --env-file .env run --rm emit --mode dataway
+docker compose --env-file .env run --rm -e EMIT_MODE=dataway emit
 # Distinct Metrics points: --count 2 (default 5s between shots)
 ```
 

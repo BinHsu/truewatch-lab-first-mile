@@ -59,7 +59,7 @@ Host alternative (after `pip install -r requirements-emitter.txt`):
 
 ```bash
 STATSD_HOST=127.0.0.1 STATSD_PORT=8125 DATAKIT_URL=http://127.0.0.1:9529 \
-  python3 scripts/emit.py --mode ddtrace
+  EMIT_MODE=ddtrace python3 scripts/emit.py
 ```
 
 ---

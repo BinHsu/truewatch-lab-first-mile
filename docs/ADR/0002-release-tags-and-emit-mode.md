@@ -33,7 +33,10 @@ EMIT_MODE=dataway python3 scripts/emit.py
 docker compose --env-file .env run --rm -e EMIT_MODE=dataway emit
 ```
 
-Precedence: `--mode` > `EMIT_MODE` > default `dataway`.
+**Preferred for docs and cloud-shaped deploys:** `EMIT_MODE` (env).  
+Optional CLI `--mode` still overrides when passed (local convenience).
+
+Precedence when both appear: `--mode` > `EMIT_MODE` > default `dataway`.
 
 ### Runtime preference
 
@@ -76,6 +79,13 @@ distinct points; protocol proof still works with `count=1`.
 
 Owner treated post-v0.0.4 work (payload contracts + Docker/CI, no host pip) as the
 lab’s first summary release **v0.1.0**, not a retag of v0.0.4.
+
+## Addendum — 2026-08-05 (EMIT_MODE-first; no fake --no-datakit flag)
+
+Docs and Compose examples prefer **`EMIT_MODE=…`** over `--mode`. Keeping DataKit
+off for DataWay is done by **not** passing `--profile datakit` (DataKit is
+profile-gated; `emit` does not `depends_on` it). Do not document Compose
+`--no-deps` as “no DataKit” — that flag is unrelated and confusing.
 
 ## Re-check trigger
 

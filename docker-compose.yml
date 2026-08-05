@@ -1,7 +1,9 @@
 # Prefer Compose for a clean lab host (ADR-0002).
 #
-# DataWay only (v0.0.1 — no DataKit container):
-#   docker compose --env-file .env run --rm --no-deps emit --mode dataway --dry-run
+# Mode: set EMIT_MODE (preferred). Do not rely on --mode in docs/examples.
+#
+# DataWay only (v0.0.1) — omit --profile datakit so DataKit never starts:
+#   docker compose --env-file .env run --rm -e EMIT_MODE=dataway emit --dry-run
 #
 # DataKit LP (v0.0.2) / DDTrace+StatsD (v0.0.3) / OTel (v0.0.4) — profile "datakit":
 #   docker compose --profile datakit --env-file .env up -d datakit
@@ -62,4 +64,4 @@ services:
       DATAKIT_URL: ${DATAKIT_URL:-http://datakit:9529}
       STATSD_HOST: ${STATSD_HOST:-datakit}
       STATSD_PORT: ${STATSD_PORT:-8125}
-    # Pass-through args, e.g. run --rm emit --mode ddtrace --dry-run
+    # Pass-through args, e.g. run --rm -e EMIT_MODE=ddtrace emit --dry-run

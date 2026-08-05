@@ -49,7 +49,7 @@ Host (optional):
 
 ```bash
 pip install -r requirements-emitter.txt
-DATAKIT_URL=http://127.0.0.1:9529 python3 scripts/emit.py --mode otel --dry-run
+DATAKIT_URL=http://127.0.0.1:9529 EMIT_MODE=otel python3 scripts/emit.py --dry-run
 ```
 
 ---
