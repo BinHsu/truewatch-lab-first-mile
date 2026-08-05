@@ -1,59 +1,132 @@
 # truewatch-lab-first-mile
 
-Public PDSA lab: a **synthetic first-mile** TrueWatch observability loop
-(ingest → Explorer/DQL → monitor → optional OWL MCP / `owl-diagnostics`).
+Public **PDSA lab**: prove a synthetic **first-mile** loop into TrueWatch —
 
-Bootstrapped from [`BinHsu/aegis-template`](https://github.com/BinHsu/aegis-template) (Harness
-Engineering security scaffold). Workload code is not written yet — start from
-`docs/handoff/CURRENT.md`.
+**emit → DataKit and/or DataWay → Metrics / APM (Explorer or OWL) → optional alert/dashboard.**
 
-## Start here
+Checkpoint tag: **[v0.1.0](https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.1.0)**  
+(four ingest paths + portable payload tests in Docker).
 
-1. `docs/handoff/CURRENT.md` — status and next safe action (no chat history required)
-2. [`docs/runbooks/owl-cli-credentials.md`](docs/runbooks/owl-cli-credentials.md) — console → `.env` (OWL §3–4, ingest Workspace Token/DataWay **§5**, OWL CLI **§6**)
-3. [`docs/runbooks/dataway-emit.md`](docs/runbooks/dataway-emit.md) — DataWay synthetic metric (v0.0.1)
-4. [`docs/runbooks/datakit-emit.md`](docs/runbooks/datakit-emit.md) — DataKit via Compose `:9529` (v0.0.2)
-5. [`docs/runbooks/ddtrace-emit.md`](docs/runbooks/ddtrace-emit.md) — StatsD + DDTrace via DataKit (v0.0.3)
-6. [`docs/runbooks/otel-emit.md`](docs/runbooks/otel-emit.md) — OTLP metric + span via DataKit (v0.0.4)
-7. [`docs/observability-glossary.md`](docs/observability-glossary.md) — Metrics/Logs/APM/RUM terms + TrueWatch console map
-8. `docs/truewatch-owl.md` — OWL / MCP / CLI product rules for this lab
-9. `AGENTS.md` — operating contract for every agent and human
-10. Copy `.env.example` → `.env` locally (never commit `.env`)
+**Status and next action live only in [`docs/handoff/CURRENT.md`](docs/handoff/CURRENT.md)** — not here.
+
+---
+
+## What you need
+
+- Git + **Docker** (or Colima) — preferred; keeps the host pip-clean ([ADR-0002](docs/ADR/0002-release-tags-and-emit-mode.md))
+- A TrueWatch workspace (lab uses site **id1** patterns in runbooks)
+- Copy `.env.example` → `.env` (never commit `.env`)
 
 ```bash
-git config core.hooksPath .githooks   # if not already set after clone
+git clone https://github.com/BinHsu/truewatch-lab-first-mile.git
+cd truewatch-lab-first-mile
+git config core.hooksPath .githooks
+cp .env.example .env   # then fill credentials — see runbook below
 ```
 
-Credential and CLI steps live in the runbook (not duplicated here).
+Credentials: [`docs/runbooks/owl-cli-credentials.md`](docs/runbooks/owl-cli-credentials.md)  
+(OWL API key ≠ Workspace Token ≠ RUM Client Token.)
 
-## Intended first-mile scope
+---
 
-- Ingest paths ([ADR-0001](docs/ADR/0001-three-ingest-paths.md) + [ADR-0003](docs/ADR/0003-otel-trace-path.md)): **DataKit**, **DataWay**, **DDTrace (metric+span)**, **OTel (metric+span)**
-- Select path with `--mode` / `EMIT_MODE` ([ADR-0002](docs/ADR/0002-release-tags-and-emit-mode.md)): `dataway` (v0.0.1), `datakit` (v0.0.2), `ddtrace` (v0.0.3), `otel` (v0.0.4)
-- Spaced repeats: `emit.py --count 2` (default interval **5s**, `EMIT_INTERVAL_SEC`) so Metrics UI does not collapse sub-second shots
-- Portable checks: `bash scripts/run-emit-payload-tests.sh` (Docker; no host pip)
-- Docker Compose preferred for a clean host; host `python3` OK for DataWay-only
-- Milestone tag **v0.1.0** = four ingest paths + payload UT/CI checkpoint
-- Visible data in TrueWatch Explorer per path
-- Optional: one Monitor + one thin Dashboard (Dashboard writes via OWL CLI / console, not MCP)
-- Optional: OWL MCP in Cursor with Bearer auth
+## Four ingest paths (the lab’s core)
+
+One emitter entrypoint: `scripts/emit.py` (`--mode` / `EMIT_MODE`).  
+Modes are **not** four ways to send the same LP `ping` — wire formats differ.
+
+```text
+                    ┌─────────────────────────────────────────┐
+  lab emitter       │  EMIT_MODE = dataway | datakit |        │
+  (Compose `emit`   │               ddtrace | otel            │
+   or host python)  └────────────┬────────────────────────────┘
+                                 │
+         ┌───────────────────────┼───────────────────────┐
+         │                       │                       │
+         ▼                       ▼                       ▼
+   ┌───────────┐          ┌────────────┐          ┌────────────┐
+   │ DataWay   │          │  DataKit   │          │  DataKit   │
+   │ openway   │          │  :9529     │          │  + inputs  │
+   │ /v1/write │          │  /v1/write │          │  ddtrace / │
+   │  (LP)     │          │  (LP)      │          │  statsd /  │
+   └─────┬─────┘          └─────┬──────┘          │  otel      │
+         │                      │                 └──────┬─────┘
+         │                      │                        │
+         └──────────────────────┴────────────────────────┘
+                                 │
+                                 ▼
+                        TrueWatch workspace
+                     Metrics (M)  ·  APM (T)
+```
+
+| Mode | Tag | What leaves the emitter | Typical hop | You prove |
+|---|---|---|---|---|
+| `dataway` | [v0.0.1](https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.1) | Line protocol metric (+ optional log) | **Direct** HTTPS → DataWay | `path=dataway` in Metrics |
+| `datakit` | [v0.0.2](https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.2) | Same LP shape | Local DataKit `:9529` → DataWay | `path=datakit` in Metrics |
+| `ddtrace` | [v0.0.3](https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.3) | **StatsD metric + DDTrace span** | DataKit `statsd` + `ddtrace` | Metrics + APM `trace_id` |
+| `otel` | [v0.0.4](https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.0.4) | **OTLP metric + OTLP span** (protobuf) | DataKit `opentelemetry` | Metrics + APM (`lab.otel.ping`) |
+
+Decisions: [ADR-0001](docs/ADR/0001-three-ingest-paths.md), [ADR-0002](docs/ADR/0002-release-tags-and-emit-mode.md), [ADR-0003](docs/ADR/0003-otel-trace-path.md).
+
+### Suggested fork order
+
+1. Credentials → `.env`
+2. **`dataway`** (no DataKit container) — fastest smoke
+3. Start DataKit profile → **`datakit`**
+4. Same DataKit → **`ddtrace`**, then **`otel`** (dual metric+span)
+5. Optional: OWL DQL before Console (runbooks say OWL-first for APM paths)
+
+---
+
+## Quick commands
 
 ```bash
+# Portable contract tests (Docker; no host pip)
+bash scripts/run-emit-payload-tests.sh
+
+# v0.0.1 DataWay (host or Compose)
 set -a && source .env && set +a
-python3 scripts/emit.py --mode dataway          # or: docker compose --env-file .env run --rm emit
-# DataKit (needs Compose profile datakit — see docs/runbooks/datakit-emit.md):
-# docker compose --profile datakit --env-file .env up -d datakit
-# DATAKIT_URL=http://127.0.0.1:9529 python3 scripts/emit.py --mode datakit
+python3 scripts/emit.py --mode dataway --dry-run
+docker compose --env-file .env run --rm --no-deps emit --mode dataway --dry-run
+
+# DataKit required for datakit / ddtrace / otel
+docker compose --profile datakit --env-file .env up -d datakit
+docker compose --env-file .env build emit
+
+docker compose --env-file .env run --rm -e EMIT_MODE=datakit emit
+docker compose --env-file .env run --rm -e EMIT_MODE=ddtrace emit
+docker compose --env-file .env run --rm -e EMIT_MODE=otel emit
+
+# Console-friendly: two metric points ≥5s apart
+docker compose --env-file .env run --rm -e EMIT_MODE=otel emit --count 2
 ```
 
-## Security harness (inherited)
+Per-path steps (OWL verify, Console, gotchas):
 
-This repo keeps the aegis **Rule → Execution → Verification** controls. See
-[`docs/SECURITY_PRACTICES.md`](docs/SECURITY_PRACTICES.md) and the root files `SECURITY.md`,
-`AGENTS.md`, `.githooks/`, `.github/workflows/security-checks.yml`.
+| Path | Runbook |
+|---|---|
+| Credentials | [`docs/runbooks/owl-cli-credentials.md`](docs/runbooks/owl-cli-credentials.md) |
+| DataWay | [`docs/runbooks/dataway-emit.md`](docs/runbooks/dataway-emit.md) |
+| DataKit | [`docs/runbooks/datakit-emit.md`](docs/runbooks/datakit-emit.md) |
+| DDTrace | [`docs/runbooks/ddtrace-emit.md`](docs/runbooks/ddtrace-emit.md) |
+| OTel | [`docs/runbooks/otel-emit.md`](docs/runbooks/otel-emit.md) |
 
-Status is written **only** in `docs/handoff/CURRENT.md` — never duplicate it in this README.
+Glossary (Metrics / APM / RUM / `trace_id`): [`docs/observability-glossary.md`](docs/observability-glossary.md)  
+OWL / MCP rules: [`docs/truewatch-owl.md`](docs/truewatch-owl.md)
+
+---
+
+## Still optional (not required for v0.1.0)
+
+- One Monitor + one thin Dashboard (Dashboard via OWL CLI / console, **not** MCP) — `AWAITING DECISION` in handoff
+- OWL MCP in Cursor with Bearer auth
+
+---
+
+## Security harness
+
+Inherited from [`BinHsu/aegis-template`](https://github.com/BinHsu/aegis-template): Rule → Execution → Verification.  
+See [`docs/SECURITY_PRACTICES.md`](docs/SECURITY_PRACTICES.md), `SECURITY.md`, `AGENTS.md`, `.githooks/`, `.github/workflows/security-checks.yml`.
 
 ## License / visibility
 
-Public learning lab. Synthetic data only.
+Public learning lab. **Synthetic data only** — no customer payloads, no real secrets in git.
