@@ -8,8 +8,9 @@
 > do the thing. Then update with the result. A post-hoc-only handoff is worthless precisely when it
 > is needed. See `AGENTS.md` §4.
 
-**Last updated:** 2026-08-06 — **cutting v0.3.0** (OWL + Tobylike MCP + CLI twin). Owner approved
-commit + CHANGELOG + GitHub release.
+**Last updated:** 2026-08-06 — **v0.3.0** released:
+https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.3.0
+(tag commit `3d6c4d0`).
 
 ---
 
@@ -23,28 +24,35 @@ commit + CHANGELOG + GitHub release.
 
 ## 2. Last completed milestone
 
-**v0.2.0** released. **v0.3.0** content ready; tag/release in progress (this cut).
+**v0.3.0 — OWL MCP + Tobylike MCP + CLI twin** (tag cut with this release).
 
 | Tag / commit | Content |
 |---|---|
 | `v0.0.1`–`v0.1.1` | See GitHub releases |
 | `v0.2.0` | Notify + policy + 4 monitors + dashboard; path values; N3 email |
-| `v0.3.0` | OWL MCP + Tobylike MCP + CLI/HTTP smokes + runbook (this release) |
+| `v0.3.0` (`3d6c4d0`) | OWL + Tobylike MCP dual smoke; CLI/HTTP twins; runbook + tips |
 
 ## 3. Repository state
 
 - Branch: `main`
 - Remote: `https://github.com/BinHsu/truewatch-lab-first-mile.git`
 - Hooks: `core.hooksPath=.githooks`
-- About to commit MCP dual-verify files; **never** commit `.cursor/mcp.json` / `.env` / tfstate
+- Local `.cursor/mcp.json` / `.env` / tfstate stay gitignored
 
 ## 4. Environment / system state
 
-- Site **id1**; Tobylike SITE_KEY **`id2`**; local `.cursor/mcp.json` gitignored
+- Site **id1**; Tobylike SITE_KEY **`id2`**
 
 ## 5. Commands already run / next
 
-Smokes `[VERIFIED]` 2026-08-06 (see §6). Next: commit → push → `git tag v0.3.0` → `gh release create`.
+v0.3.0 pushed + tagged. Live TF UUIDs from v0.2.0 (may drift if replaced):
+
+| Resource | UUID |
+|---|---|
+| notify | `notify_dee7b11f14bd4650ae45f75c71d743d4` |
+| alert policy | `altpl_49144e885cbc43f3860680176b31c170` |
+| dashboard | `dsbd_d6a2a584ba69436aa4d376ebcfd17676` |
+| monitors | see `terraform output` |
 
 ## 6. Test results
 
@@ -54,28 +62,24 @@ Smokes `[VERIFIED]` 2026-08-06 (see §6). Next: commit → push → `git tag v0.
 
 **Path B2 — Tobylike MCP** `[VERIFIED]` `2026-08-06T08:13:31Z` —
 `us1-toby-ai` + `Endpoint=id2`; `list_checkers`; `query_metric_data` last=1/count=7.
-Replay: `python3 scripts/mcp-dual-smoke.py`.
 
 ## 7. Current blockers, in priority order
 
-None for v0.3.0 cut.
+None for v0.3.0.
 
 ## 8. AWAITING DECISION — owner only
 
-None for this cut. Later product tags TBD.
+None required for this cut. Next product tag TBD by owner.
 
 ## 9. Exact next safe action
 
-If this handoff is read mid-cut and tag is missing:
+Optional confirm:
 
 ```bash
-git status
-git log -1 --oneline
-git tag -l 'v0.3.0'
+git fetch --tags && git show v0.3.0 --stat
+bash scripts/owl-readonly-smoke.sh
+python3 scripts/mcp-dual-smoke.py
 ```
-
-If commit exists but tag/release missing, finish from that commit. After release, update this file
-with release URL + SHA (same pattern as v0.2.0).
 
 ## 10. Things that will bite you
 
@@ -83,3 +87,4 @@ with release URL + SHA (same pattern as v0.2.0).
 - Tobylike: **`Endpoint=id2`**, global `us1-toby-ai` host.
 - OWL MCP metrics: **`owl.data.simple_query`**, not `owl.data.query`.
 - Dashboard create is **not** via MCP.
+- Tips SSOT: [`docs/truewatch-tips.md`](../truewatch-tips.md).
