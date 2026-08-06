@@ -8,8 +8,9 @@
 > do the thing. Then update with the result. A post-hoc-only handoff is worthless precisely when it
 > is needed. See `AGENTS.md` §4.
 
-**Last updated:** 2026-08-06 — Cutting **v0.2.0**: commit + push + GitHub release (owner asked).
-Closed loop verified on id1 (dashboard, four monitors, N3 email via `acnt_…`).
+**Last updated:** 2026-08-06 — **v0.2.0** released:
+https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.2.0
+(`c04596f`). Next product slice when owner asks: **v0.3.0** OWL + Tobylike MCP.
 
 ---
 
@@ -68,14 +69,13 @@ None required for v0.2.0 cut.
 
 ## 9. Exact next safe action
 
-After this release lands on GitHub:
+Optional confirm:
 
 ```bash
-# optional: confirm tag
 git fetch --tags && git show v0.2.0 --stat
 ```
 
-Then start v0.3.0 design only when owner asks.
+Start **v0.3.0** (OWL MCP + Tobylike) only when the owner asks.
 
 ## 10. Things that will bite you
 
