@@ -64,3 +64,5 @@ OWL / Open API needs **Management → API Key Management** (Key Secret →
 3. Do not promise dashboard creation/conversion via MCP or via missing skills; state CLI vs MCP vs console limitations clearly.
 4. Never commit API keys, `OWL_TOKEN`, or Bearer tokens into this repo.
 5. Cite absolute times in answers (not only “last 15 minutes”). Empty results are valid—report scope and emptiness.
+6. Lab-verified Console/API gotchas (mailGroup `acnt_…`, `is_public`, `by path`, …):  
+   [`docs/truewatch-tips.md`](truewatch-tips.md) — append new tips there instead of scattering one-offs.

@@ -23,6 +23,12 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from pathlib import Path
+
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+from lab_path_values import default_value  # noqa: E402
 
 MEASUREMENT = "truewatch_lab_first_mile"
 DEFAULT_TAGS = "path=datakit,service=lab-emitter,env=lab"
@@ -100,8 +106,8 @@ def main() -> int:
     parser.add_argument(
         "--value",
         type=float,
-        default=1.0,
-        help="Metric field ping= (default 1.0)",
+        default=default_value("datakit"),
+        help=f"Metric field ping= (default {default_value('datakit'):g})",
     )
     args = parser.parse_args()
 

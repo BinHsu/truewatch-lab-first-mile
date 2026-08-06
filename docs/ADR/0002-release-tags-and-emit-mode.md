@@ -95,6 +95,11 @@ profile-gated; `emit` does not `depends_on` it). Do not document Compose
 Owner accepted thin closed-loop + MCP tags. Canonical decision:
 [ADR-0004](0004-tf-json-closed-loop.md).
 
+## Addendum — 2026-08-06 (v0.2.0 cut)
+
+**v0.2.0** tagged after id1 apply + four-path emit + N3 email verify (`mailGroup` → `acnt_…`).
+See `CHANGELOG.md` and `docs/truewatch-tips.md`.
+
 ## Re-check trigger
 
 Revisit if Compose cannot run DataKit cleanly on macOS arm64, or if Cloudflare /

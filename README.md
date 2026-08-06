@@ -5,7 +5,8 @@ Public **PDSA lab**: prove a synthetic **first-mile** loop into TrueWatch —
 **emit → DataKit and/or DataWay → Metrics / APM (Explorer or OWL) → optional alert/dashboard.**
 
 Checkpoint tags: **[v0.1.0](https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.1.0)** (paths + UT/CI),
-**[v0.1.1](https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.1.1)** (forker docs close-out).
+**[v0.1.1](https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.1.1)** (forker docs),
+**[v0.2.0](https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.2.0)** (TF closed loop + N3 email).
 
 **Status and next action live only in [`docs/handoff/CURRENT.md`](docs/handoff/CURRENT.md)** — not here.
 
@@ -68,6 +69,41 @@ Modes are **not** four ways to send the same LP `ping` — wire formats differ.
 
 Decisions: [ADR-0001](docs/ADR/0001-three-ingest-paths.md), [ADR-0002](docs/ADR/0002-release-tags-and-emit-mode.md), [ADR-0003](docs/ADR/0003-otel-trace-path.md).
 
+### Compare all four in the web console
+
+After emitting each mode (lab defaults **1 / 2 / 3 / 4** by path — see
+`scripts/lab_path_values.py`), open TrueWatch → **Metrics** →
+**Explorer** or **Metric Analysis**. The four paths do **not** share one metric name:
+
+| Path | Measurement | Field | Default value | Distinguish with |
+|---|---|---|---|---|
+| `dataway` | `truewatch_lab_first_mile` | `ping` | **1** | tag **`path=dataway`** |
+| `datakit` | `truewatch_lab_first_mile` | `ping` | **2** | tag **`path=datakit`** |
+| `ddtrace` | `truewatch` | `lab_first_mile_ping` | **3** | tag **`path=ddtrace`** |
+| `otel` | `otel_service` | `truewatch_lab_first_mile.ping` | **4** | tag **`path=otel`** |
+
+**`dataway` and `datakit` share one measurement.** In Metric Analysis, if you query
+`truewatch_lab_first_mile` → `ping` with **Avg** and leave **`by Label` empty**, both
+paths collapse into **one** series (looks like a single failure). Set **`by path`**, or
+filter `path=dataway` / `path=datakit` separately. That is intentional (same semantic
+metric + tags), not four differently named metrics.
+
+**Stagger for the board:** same-second emits still stack on the x-axis. Prefer:
+
+```bash
+set -a && source .env && set +a
+bash scripts/emit-dashboard-demo.sh          # uses path defaults + ~8s between paths
+# bash scripts/emit-dashboard-demo.sh --interval 10
+```
+
+Fault inject stays **`--value 900`** (monitor `>=900`). Override any default with
+`--value` when needed.
+
+Ignore measurement **`dk`** (DataKit self-metrics). APM spans for `ddtrace` / `otel`:
+service **`lab-emitter`** (`lab.ddtrace.ping` / `lab.otel.ping`).
+
+Per-path console steps: runbooks linked under [Quick commands](#quick-commands).
+
 ### Suggested fork order
 
 1. Credentials → `.env`
@@ -75,6 +111,7 @@ Decisions: [ADR-0001](docs/ADR/0001-three-ingest-paths.md), [ADR-0002](docs/ADR/
 3. Start DataKit profile → **`datakit`**
 4. Same DataKit → **`ddtrace`**, then **`otel`** (dual metric+span)
 5. Optional: OWL DQL before Console (runbooks say OWL-first for APM paths)
+6. Console: compare four using the table above (`by path` for the LP pair)
 
 ---
 
@@ -122,16 +159,16 @@ Per-path steps (OWL verify, Console, gotchas):
 | OTel | [`docs/runbooks/otel-emit.md`](docs/runbooks/otel-emit.md) |
 
 Glossary (Metrics / APM / RUM / `trace_id`): [`docs/observability-glossary.md`](docs/observability-glossary.md)  
-OWL / MCP rules: [`docs/truewatch-owl.md`](docs/truewatch-owl.md)
+OWL / MCP rules: [`docs/truewatch-owl.md`](docs/truewatch-owl.md)  
+TrueWatch tips (mailGroup id, `is_public`, `by path`, …): [`docs/truewatch-tips.md`](docs/truewatch-tips.md)
 
 ---
 
 ## Still optional / next tags
 
-- **v0.2.0 (in progress):** Monitor + Dashboard + email notify via **TF + JSON** (local state) —
-  [`terraform/`](terraform/), [`docs/runbooks/monitor-dashboard-tf.md`](docs/runbooks/monitor-dashboard-tf.md),
-  [ADR-0004](docs/ADR/0004-tf-json-closed-loop.md).  
-  **Forkers:** `bash scripts/tf-with-env.sh plan` (loads `.env`; Terraform will not source it alone).
+- **v0.2.0:** shipped — Monitor + Dashboard + N3 email via TF+JSON (local state). See
+  [`CHANGELOG.md`](CHANGELOG.md), [`docs/runbooks/monitor-dashboard-tf.md`](docs/runbooks/monitor-dashboard-tf.md),
+  [ADR-0004](docs/ADR/0004-tf-json-closed-loop.md).
 - **v0.3.0:** OWL MCP + Tobylike MCP
 - Dashboard writes remain **not** via MCP
 

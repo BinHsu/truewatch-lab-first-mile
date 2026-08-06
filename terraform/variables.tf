@@ -1,6 +1,9 @@
 variable "lab_alert_email" {
   type        = string
-  description = "N3 mailbox for mailGroup notify object. Set via TF_VAR_lab_alert_email or terraform.tfvars (gitignored)."
+  # Prefer workspace member UUID (acnt_…) — mailGroup UI/delivery expects members.
+  # Member email also works when it matches Member Management exactly.
+  # Set via TF_VAR_lab_alert_email (scripts/tf-with-env.sh: LAB_ALERT_MEMBER_UUID or LAB_ALERT_EMAIL).
+  description = "mailGroup to[] entry: member UUID (acnt_…) preferred, or member email."
   sensitive   = true
 }
 

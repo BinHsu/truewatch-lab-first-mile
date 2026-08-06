@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.2.0 — 2026-08-06 (TF+JSON closed loop + N3 email)
+
+Monitor + Dashboard + email notify on site **id1**, verified end-to-end:
+
+- Terraform closed loop: notify (`mailGroup`) → alert policy → four path monitors → dashboard
+- Dashboard `is_public=1`; console compare docs (`by path`); demo emit stagger script
+- Path default metric values **1/2/3/4** (`scripts/lab_path_values.py`)
+- mailGroup binds workspace **member UUID** (`LAB_ALERT_MEMBER_UUID` / `acnt_…`) — tip sheet
+- Fault inject `--value 900` → critical event → email `[VERIFIED]`
+- `docs/truewatch-tips.md` + agent duty in `AGENTS.md` to append lab-verified gotchas
+
+Local `terraform.tfstate` stays gitignored; forkers choose their own backend (ADR-0004).
+
 ## v0.1.1 — 2026-08-05 (Docs close-out)
 
 Forker-facing close-out after v0.1.0:

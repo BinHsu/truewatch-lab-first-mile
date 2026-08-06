@@ -94,9 +94,14 @@ Local DataKit write URLs do **not** carry the workspace token; DataKit uses
 
 1. TrueWatch console → Metrics / Explorer (or Metric Analysis).
 2. Measurement **`truewatch_lab_first_mile`**, tag **`path=datakit`**, field **`ping`**
-   (default value **`1.0`**, not a large integer).
+   (lab default **`2.0`** via `lab_path_values.py`, not a large integer).
 3. Widen time range 15–30 minutes if empty.
 4. Still empty → check DataKit logs, `DK_DATAWAY` site match, and step 4 HTTP status.
+
+**Comparing with `dataway`:** same measurement + field. In Metric Analysis use
+**`by path`** (or filter `path=datakit` alone). Empty **`by Label`** + Avg merges both
+paths into one series. Four-path console map:
+[`README.md`](../../README.md#compare-all-four-in-the-web-console).
 
 You will often also see a second measurement named **`dk`**. That is **not** the lab
 emit — see the next section.
@@ -126,7 +131,7 @@ Compose emit; measurement `dk` present while the container was running.
 | Measurement | `truewatch_lab_first_mile` | **`dk`** |
 | Who writes it | `scripts/emit_datakit.py` → `:9529/v1/write/…` | DataKit built-in **`dk` input** |
 | Why it appears | You ran emit | Compose sets `ENV_DEFAULT_ENABLED_INPUTS=dk` |
-| Typical fields | `ping` (float, default `1.0`) | Many `datakit_*` fields (CPU, mem, HTTP API, DataWay client, …) |
+| Typical fields | `ping` (float, default **`2.0`**) | Many `datakit_*` fields (CPU, mem, HTTP API, DataWay client, …) |
 | Distinguishing tags on lab points | `path=datakit`, `service=lab-emitter` | N/A for lab series |
 
 **Do not confuse** tag `__input_source=dk.http_api` on the lab series with
@@ -159,7 +164,7 @@ not `ping`.
 |---|---|
 | Measurement | `truewatch_lab_first_mile` |
 | Tags | `path=datakit`, `service=lab-emitter`, `env=lab` (DataKit may add `host`, `lab`, `__input_source`, …) |
-| Field | `ping=<float>` (default `1.0`) |
+| Field | `ping=<float>` (default **`2.0`** for datakit; see `scripts/lab_path_values.py`) |
 | Local endpoint | `${DATAKIT_URL}/v1/write/metric` (default host `http://127.0.0.1:9529`) |
 | Upstream | DataKit → `ENV_DATAWAY` (`DK_DATAWAY`) |
 

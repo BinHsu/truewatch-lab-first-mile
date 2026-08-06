@@ -99,11 +99,13 @@ Record command outputs (redacted) and absolute times in
 
 | Signal | Where | What to look for |
 |---|---|---|
-| Metric | **Metrics** → Explorer / Metric Analysis | Series from StatsD path; filter `path=ddtrace` or service `lab-emitter` if present |
+| Metric | **Metrics** → Explorer / Metric Analysis | Measurement **`truewatch`**, field **`lab_first_mile_ping`**, filter **`path=ddtrace`** |
 | Span | **APM** → Traces | `service=lab-emitter`, resource `lab.ddtrace.ping`, open detail → **`trace_id`** |
 
 Widen time range 15–30 minutes if empty. If OWL passed but Console empty, wait for
-ingest lag then refresh — do not invert the order (OWL first).
+ingest lag then refresh — do not invert the order (OWL first). Four-path console map
+(and why LP paths need **`by path`**):
+[`README.md`](../../README.md#compare-all-four-in-the-web-console).
 
 ---
 

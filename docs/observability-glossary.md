@@ -32,7 +32,7 @@ Trial UI language may be EN/ZH mixed.
 
 | Path | Console place | Evidence |
 |---|---|---|
-| DataWay / DataKit **metric** `ping` | **Metrics** | `path=dataway` / `path=datakit` `[VERIFIED]` |
+| DataWay / DataKit **metric** `ping` | **Metrics** | Same measurement `truewatch_lab_first_mile`; distinguish with **`path=`** / Metric Analysis **`by path`** (empty `by` + Avg merges both). Map: [`README.md`](../README.md#compare-all-four-in-the-web-console) |
 | DataKit self-metrics | **Metrics** measurement **`dk`** | Side effect of `ENV_DEFAULT_ENABLED_INPUTS=dk` — see [`runbooks/datakit-emit.md`](runbooks/datakit-emit.md) |
 | Traces | **APM** | Not yet — stubs until v0.0.3 / v0.0.4 |
 | RUM | **RUM** | Out of ADR ingest set; Client Token gotcha only |

@@ -101,10 +101,11 @@ traces `trace_id=31f5553f98c1c2a641b5dbcb63b79362` and `bc637a8d69523ceda08afaa3
 
 | Signal | Console | What to find |
 |---|---|---|
-| Metric | **Metrics** → Explorer | Filter `path=otel` / measurement from OWL |
+| Metric | **Metrics** → Explorer | Measurement **`otel_service`**, field **`truewatch_lab_first_mile.ping`**, filter **`path=otel`** |
 | Span | **APM** → Traces | `service=lab-emitter`, open → **`trace_id`** |
 
-OWL first, then Console (same rule as ddtrace runbook).
+OWL first, then Console (same rule as ddtrace runbook). Four-path console map:
+[`README.md`](../../README.md#compare-all-four-in-the-web-console).
 
 ---
 

@@ -46,6 +46,8 @@ If two documents disagree, the more recent and more specific wins — but record
 
 - Product integration rules: `docs/truewatch-owl.md` (do not answer OWL/MCP setup from memory when
   this file disagrees with official docs).
+- Lab-verified gotchas: `docs/truewatch-tips.md` — append new tips there (duty defined in
+  `AGENTS.md`, not duplicated here).
 - Prefer configured OWL MCP (`Authorization: Bearer …`) or local `owl` + `owl-diagnostics` over
   inventing DQL results.
 - Legacy Tobylike MCP URL/header must not be recommended unless the owner asks for legacy compat.

@@ -2,10 +2,12 @@
 """Unified ingest emitter — select path via --mode or EMIT_MODE.
 
 Modes (ADR-0001 / ADR-0002 / ADR-0003):
-  dataway  — direct DataWay write (v0.0.1)
-  datakit  — via local/container DataKit metrics (v0.0.2)
-  ddtrace  — DDTrace span + StatsD metric → DataKit (v0.0.3)
-  otel     — OTLP span + OTLP metric → DataKit (v0.0.4)
+  dataway  — direct DataWay write (v0.0.1); default value 1.0
+  datakit  — via local/container DataKit metrics (v0.0.2); default value 2.0
+  ddtrace  — DDTrace span + StatsD metric → DataKit (v0.0.3); default value 3.0
+  otel     — OTLP span + OTLP metric → DataKit (v0.0.4); default value 4.0
+
+Defaults live in scripts/lab_path_values.py (chart separation; tag path= is identity).
 
 Repeat / spacing (all modes):
   --count N       emit N times (default 1; env EMIT_COUNT overrides if set)

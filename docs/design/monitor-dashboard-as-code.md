@@ -52,10 +52,10 @@ Verify recipe for the board: run each `EMIT_MODE` at least once (spaced emits OK
 - Notify: `LAB_ALERT_EMAIL` → mailGroup; policy emails **`critical` only** (not `nodata`).
 - Checker SSOT: `terraform/json/monitor.checker.json` (default enabled).
 - **Multi-path:** four targets — dataway / datakit / ddtrace / otel (same series as the dashboard metrics chart).
-- **Trigger:** any path `last(ping|value) >= 900` (`conditionLogic: or`). Normal lab emit uses **1.0** → stays quiet.
+- **Trigger:** any path `last(ping|value) >= 900` (`conditionLogic: or`). Lab default
+  emit values are **1 / 2 / 3 / 4** by path (`scripts/lab_path_values.py`) → stay quiet.
 - **Why not no-data:** stopping emit would keep firing / re-notify and email-bomb. Fault inject is intentional:
-  - LP: `bash … emit` with `--ping 900` (passthrough from `emit.py`)
-  - ddtrace/otel: `--value 900`
+  - any path: `--value 900` (passthrough from `emit.py`)
 - Empty `noDataTitle` / `noDataMessage`; do not rely on nodata for this lab.
 - After first apply, console-export may rewrite JSON — re-commit export if needed.
 

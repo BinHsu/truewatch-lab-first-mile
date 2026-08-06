@@ -13,7 +13,7 @@ output "dashboard_uuid" {
   description = "Lab dashboard UUID"
 }
 
-output "monitor_uuid" {
-  value       = try(truewatch_monitor_json.lab[0].uuid, null)
-  description = "Lab monitor UUID (null while enable_monitor=false)"
+output "monitor_uuids" {
+  value       = { for k, m in truewatch_monitor.lab : k => m.uuid }
+  description = "Lab monitor UUIDs by path (dataway/datakit/ddtrace/otel)"
 }

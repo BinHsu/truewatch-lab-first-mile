@@ -16,12 +16,13 @@ fi
 # shellcheck disable=SC1090
 set -a && source "${ENV_FILE}" && set +a
 
-if [[ -z "${LAB_ALERT_EMAIL:-}" ]]; then
-  echo "MISSING: LAB_ALERT_EMAIL in .env (needed as TF_VAR_lab_alert_email)." >&2
+if [[ -z "${LAB_ALERT_MEMBER_UUID:-}${LAB_ALERT_EMAIL:-}" ]]; then
+  echo "MISSING: set LAB_ALERT_MEMBER_UUID (acnt_… preferred) or LAB_ALERT_EMAIL in .env." >&2
   exit 1
 fi
 
-export TF_VAR_lab_alert_email="${LAB_ALERT_EMAIL}"
+# mailGroup expects a workspace member; UUID resolves in console, bare external email does not.
+export TF_VAR_lab_alert_email="${LAB_ALERT_MEMBER_UUID:-${LAB_ALERT_EMAIL}}"
 export TRUEWATCH_ACCESS_TOKEN="${TRUEWATCH_ACCESS_TOKEN:-${OWL_TOKEN:-${OWL_API_KEY:-}}}"
 if [[ -z "${TRUEWATCH_ACCESS_TOKEN}" ]]; then
   echo "MISSING: TRUEWATCH_ACCESS_TOKEN or OWL_TOKEN / OWL_API_KEY in .env." >&2

@@ -21,6 +21,12 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from pathlib import Path
+
+_SCRIPTS = Path(__file__).resolve().parent
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+from lab_path_values import default_value  # noqa: E402
 
 try:
     from opentelemetry.proto.collector.metrics.v1.metrics_service_pb2 import (
@@ -172,8 +178,8 @@ def main() -> int:
     parser.add_argument(
         "--value",
         type=float,
-        default=1.0,
-        help="OTLP gauge value (default 1.0)",
+        default=default_value("otel"),
+        help=f"OTLP gauge value (default {default_value('otel'):g})",
     )
     parser.add_argument(
         "--skip-metric",

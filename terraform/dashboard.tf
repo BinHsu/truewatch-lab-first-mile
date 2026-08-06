@@ -3,7 +3,8 @@ resource "truewatch_dashboard" "lab" {
 
   name      = var.name_prefix
   desc      = "Lab first-mile: four-path metrics (one chart) + APM (Dashboard B)."
-  is_public = 0
+  # 1 = visible to workspace members in console (0 = private to API-key creator only).
+  is_public = 1
 
   tag_names = [
     "lab-first-mile",

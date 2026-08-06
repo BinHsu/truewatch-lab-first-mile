@@ -31,13 +31,13 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 |---|---|---|
 | `AGENTS.md` | The operating contract for every agent and human: read-first order, single-source-of-status, handoff protocol, evidence standard, decision records, never-commit list, tool-access classes, destructive-action protocol, and the rule against checks that cannot fail. Tool-agnostic. | Any agent or contributor, first |
 | `CLAUDE.md` | Claude Code-only mechanics on top of `AGENTS.md`, which it imports on line 1. Permissions, delegation boundary, conflict resolution. Holds no shared policy. | Claude Code sessions |
-| `README.md` | What this lab is (TrueWatch first-mile), start-here pointers, and that status lives only in handoff. States no project status by design. | Forkers, first-time readers |
+| `README.md` | What this lab is (TrueWatch first-mile), start-here pointers, four-path web-console compare (`by path` tip). Status lives only in handoff. | Forkers, first-time readers |
 | `CHANGELOG.md` | Release notes for git tags v0.0.1–v0.1.1 (ingest slices + lab checkpoint + docs close-out). | Anyone cutting or consuming a release tag |
 | `docker-compose.yml` | Compose: `emit` + optional `datakit` (profile) with `dk,ddtrace,statsd,opentelemetry` (v0.0.2–v0.0.4). | Forkers preferring a clean Docker host |
 | `SECURITY.md` | Security ground rules an agent must not guess at: secrets, untrusted input, external actions, dependencies. | Reviewers; anyone touching secrets or external systems |
 | `PRODUCT_SENSE.md` | The product red line that hidden destructive actions are a defect, plus the preview/confirm/log/abort protocol. Restates the protocol also given in `AGENTS.md` §10. | Any agent before a destructive command |
 | `.gitignore` | Declares what must never be committed. Note the git gotcha recorded in `AGENTS.md` §7: ignore `dir/*`, not `dir/`, or a negation cannot re-include a member. | Anyone adding a file type that might carry secrets |
-| `.env.example` | Local env var names (OWL, Workspace Token, DataWay/DK_DATAWAY, DataKit/StatsD, `LAB_ALERT_EMAIL` for v0.2.0 N3); copy to `.env`. | Anyone wiring ingest, OWL, or lab alert mail |
+| `.env.example` | Local env var names (OWL, Workspace Token, DataWay/DK_DATAWAY, DataKit/StatsD, `LAB_ALERT_MEMBER_UUID` / `LAB_ALERT_EMAIL` for N3); copy to `.env`. | Anyone wiring ingest, OWL, or lab alert mail |
 | `requirements-emitter.txt` | Pinned pip deps for emitter image (`msgpack`, `opentelemetry-proto`). | Compose emit build; host optional for ddtrace/otel |
 | `docs/FILE-MAP.md` | This file. The exhaustive manifest. | Anyone about to create a new file |
 
@@ -82,13 +82,14 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `terraform/variables.tf` | Email, endpoint, enable_* flags. | TF apply |
 | `terraform/alert.tf` | mailGroup notify + alert policy. | TF apply |
 | `terraform/dashboard.tf` | `truewatch_dashboard` from JSON. | TF apply |
-| `terraform/monitor.tf` | `truewatch_monitor_json` (default off). | TF apply |
-| `terraform/outputs.tf` | UUIDs for notify/policy/dashboard/monitor. | TF apply |
+| `terraform/monitor.tf` | Four `truewatch_monitor` (for_each path); alias Result, >=900. | TF apply |
+| `terraform/outputs.tf` | UUIDs for notify/policy/dashboard/monitor_uuids map. | TF apply |
 | `terraform/json/dashboard.json` | Dashboard B template_info (4-path metrics + APM placeholder). | Edit then TF apply |
-| `terraform/json/monitor.checker.json` | Checker stub; keep enable_monitor false until validated. | Edit then TF apply |
+| `terraform/json/monitor.checker.json` | Per-path DQL reference (not file()'d); HCL owns checkers. | Docs / console export aid |
 | `terraform/terraform.tfvars.example` | Example tfvars (copy to gitignored `terraform.tfvars`). | Forkers wiring TF |
 | `docs/handoff/CURRENT.md` | The single source of project status and the exact next safe action. The file that lets a cold agent or human resume with no chat history. | Every worker, before anything else |
 | `docs/truewatch-owl.md` | Canonical TrueWatch OWL/MCP/CLI guidance for this lab (synced from the trial workspace). Prefer over legacy `/mcp-server/` docs. | Anyone integrating TrueWatch or advising MCP setup |
+| `docs/truewatch-tips.md` | Lab-verified TrueWatch gotchas/tips. **Agents append new tips here** (see `AGENTS.md`). | Forkers and every agent after a Console/API surprise |
 | `docs/observability-glossary.md` | Metrics/Logs/APM/RUM glossary, span vs spam, and TrueWatch console ↔ signal map for this lab. | Forkers learning platform terms; anyone looking for `trace_id` in the wrong console |
 | `docs/runbooks/owl-cli-credentials.md` | Credentials runbook: Open API Key → OWL `.env` (§3–4), Workspace Token + DataWay (§5 W1–W5), OWL CLI install/verify (§6 A–G). | Forkers wiring OWL or ingest credentials |
 | `docs/runbooks/dataway-emit.md` | Forker steps for DataWay via `EMIT_MODE=dataway` (Compose or host), then Explorer. | Anyone proving ADR-0001 DataWay path |
@@ -117,6 +118,8 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `scripts/security-benchmark.py` | Security asserted as a benchmark rather than a review item. **Ships with three unimplemented benchmarks that report `NOT-IMPLEMENTED` and are never counted as passes.** `--require-implemented` turns it into a gate once wired. | CI; whoever specialises the benchmarks per stack |
 | `scripts/tf-with-env.sh` | Sources `.env`, sets `TF_VAR_lab_alert_email` + `TRUEWATCH_ACCESS_TOKEN`, runs `terraform` in `terraform/`. | Forkers / anyone planning or applying v0.2.0 TF |
 | `scripts/emit.py` | Unified emitter: prefer `EMIT_MODE`; optional `--mode`; `--count` / `--interval` (default 5s). | Anyone emitting lab telemetry |
+| `scripts/lab_path_values.py` | Lab contract: default metric values per path (1/2/3/4); identity remains `path` tag. | `emit_*.py`; docs; dashboard demo |
+| `scripts/emit-dashboard-demo.sh` | Four-path emit with time stagger; uses `lab_path_values` defaults. | Dashboard / Metric Analysis multi-series |
 | `scripts/emit_dataway.py` | DataWay mode (v0.0.1): synthetic metric/log to `/v1/write/…`; redacts token; lab User-Agent (avoids CF 1010). | Forkers / agents proving DataWay ingest |
 | `scripts/emit_datakit.py` | DataKit mode (v0.0.2): synthetic metric/log to local DataKit `/v1/write/…` (`DATAKIT_URL`, default `:9529`). | Forkers / agents proving DataKit ingest |
 | `scripts/emit_ddtrace.py` | DDTrace mode (v0.0.3): DogStatsD metric + `/v0.4/traces` span (needs msgpack). | Forkers / agents proving DDTrace ingest |

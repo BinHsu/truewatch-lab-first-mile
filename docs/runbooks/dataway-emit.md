@@ -69,10 +69,15 @@ Script never prints the raw token.
 ### 4. See it in the console (Group B)
 
 1. TrueWatch console → Metrics / Explorer (or Metric Analysis).
-2. Look for measurement **`truewatch_lab_first_mile`**, tag **`path=dataway`**.
+2. Measurement **`truewatch_lab_first_mile`**, field **`ping`**, tag **`path=dataway`**.
 3. Widen time range to the last 15–30 minutes if empty; ingest can lag briefly.
 4. Empty result after several minutes → re-check token, `DATAWAY_URL` site match,
    and HTTP status from step 3.
+
+**Comparing with `datakit`:** both use the same measurement + field. In Metric
+Analysis, set **`by path`** (or filter `path=dataway` alone). Leaving **`by Label`
+empty** with Avg collapses dataway + datakit into one row — that is not a failed
+emit. Four-path console map: [`README.md`](../../README.md#compare-all-four-in-the-web-console).
 
 Optional later: confirm with OWL CLI / DQL once a query path is documented for
 this measurement (OWL was verified with `owl sync` only so far).
@@ -85,7 +90,7 @@ this measurement (OWL was verified with `owl sync` only so far).
 |---|---|
 | Measurement | `truewatch_lab_first_mile` |
 | Tags | `path=dataway`, `service=lab-emitter`, `env=lab` |
-| Field | `ping=<float>` (default `1.0`) |
+| Field | `ping=<float>` (default **`1.0`** for dataway; see `scripts/lab_path_values.py`) |
 | Endpoint | `${DATAWAY_URL}/v1/write/metric?token=…` |
 
 Synthetic demo data only — no customer payloads.

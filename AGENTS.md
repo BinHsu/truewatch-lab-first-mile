@@ -30,6 +30,22 @@ The curated "what to read next" list above is a different job: it routes a reade
 that matter for a goal. `docs/FILE-MAP.md` lists everything and recommends nothing. Do not merge the
 two.
 
+### TrueWatch lab tips: `docs/truewatch-tips.md`
+
+When you discover a TrueWatch / Console / OpenAPI / OWL behaviour that **product docs or the UI do
+not make obvious** (wrong token type, field accepted by API but empty in Console, Metric Analysis
+collapse, tool name ≠ semantics, …) and you verify it:
+
+1. **Append a tip to [`docs/truewatch-tips.md`](docs/truewatch-tips.md) in the same change** — do not
+   leave it only in chat, handoff prose, or a runbook triage row.
+2. Use the tip template in that file (symptom / cause / fix / evidence tag). No secrets.
+3. Optionally link from the relevant runbook; **do not** invent a second tips file.
+4. Status and “what to do next” still belong only in `docs/handoff/CURRENT.md` — tips are evergreen
+   gotchas, not status.
+
+OWL/MCP policy stays in `docs/truewatch-owl.md`. Tips are the lab’s fill-in sheet for undocumented
+sharp edges.
+
 ---
 
 ## 1. What this repo is
@@ -46,6 +62,7 @@ live in `docs/truewatch-owl.md`.
 |---|---|
 | `docs/handoff/CURRENT.md` | Sole project status + next safe action |
 | `docs/truewatch-owl.md` | Canonical TrueWatch OWL/MCP/CLI guidance for this lab |
+| `docs/truewatch-tips.md` | Lab-verified TrueWatch gotchas; **append new tips here** (see “TrueWatch lab tips” above) |
 | `README.md` | What the lab is and how to start |
 | `AGENTS.md` | This operating contract |
 | `SECURITY.md` | Secrets / external-action rules |
@@ -217,6 +234,9 @@ Before you wire anything into CI, or inherit something already wired:
 ## 13. Repo-specific rules
 
 - Follow `docs/truewatch-owl.md` for TrueWatch/OWL/MCP. Prefer OWL docs over legacy `/mcp-server/`.
+- Lab-verified Console/API sharp edges live in **`docs/truewatch-tips.md`**. After verifying a new
+  gotcha, **append a tip there in the same change** (see “TrueWatch lab tips” under Read first). Do
+  not leave it only in chat or handoff.
 - This repo is **public**: commit only synthetic demo data and redacted templates. No API keys,
   `OWL_TOKEN`, Bearer tokens, or customer payloads.
 - Do not promise dashboard create/replace via MCP; that path is CLI/console per OWL docs.

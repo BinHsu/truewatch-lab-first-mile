@@ -3,6 +3,8 @@ resource "truewatch_notify_object" "lab_email" {
 
   name = "${var.name_prefix}-mail"
   type = "mailGroup"
+  # to[] must be workspace members (acnt_… UUID preferred). Arbitrary external
+  # emails store in API but console shows empty and mail often never arrives.
   opt_set = jsonencode({
     to = [var.lab_alert_email]
   })
@@ -16,8 +18,9 @@ resource "truewatch_alert_policy" "lab" {
   desc          = "Lab first-mile alert policy (N3 email)."
   rule_timezone = var.rule_timezone
 
-  # Bind checkers when monitor is enabled (uuid from monitor_json).
-  checker_uuids = var.enable_monitor ? [truewatch_monitor_json.lab[0].uuid] : null
+  # Associate monitors from the monitor resource (created after this policy).
+  # Binding is also set via alert_policy_uuids on truewatch_monitor.lab.
+  checker_uuids = []
 
   alert_opt = {
     alert_type     = "status"
@@ -36,4 +39,8 @@ resource "truewatch_alert_policy" "lab" {
       }]
     }]
   }
+
+  depends_on = [
+    truewatch_notify_object.lab_email,
+  ]
 }

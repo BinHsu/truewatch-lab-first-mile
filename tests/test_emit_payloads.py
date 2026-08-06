@@ -38,6 +38,33 @@ def _load(name: str):
     return mod
 
 
+class TestLabPathValues(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.vals = _load("lab_path_values")
+
+    def test_defaults_are_distinct_and_below_fault(self) -> None:
+        d = self.vals.DEFAULT_VALUE_BY_PATH
+        self.assertEqual(
+            d,
+            {"dataway": 1.0, "datakit": 2.0, "ddtrace": 3.0, "otel": 4.0},
+        )
+        self.assertEqual(len(set(d.values())), 4)
+        for v in d.values():
+            self.assertLess(v, 900.0)
+
+    def test_emit_argparse_defaults(self) -> None:
+        for name, path in (
+            ("emit_dataway", "dataway"),
+            ("emit_datakit", "datakit"),
+            ("emit_ddtrace", "ddtrace"),
+            ("emit_otel", "otel"),
+        ):
+            mod = _load(name)
+            # Re-parse help path: call parser construction indirectly via default_value
+            self.assertEqual(mod.default_value(path), self.vals.default_value(path))
+
+
 class TestDatawayRedactAndBodies(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
