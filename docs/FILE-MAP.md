@@ -38,6 +38,7 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `PRODUCT_SENSE.md` | The product red line that hidden destructive actions are a defect, plus the preview/confirm/log/abort protocol. Restates the protocol also given in `AGENTS.md` §10. | Any agent before a destructive command |
 | `.gitignore` | Declares what must never be committed. Note the git gotcha recorded in `AGENTS.md` §7: ignore `dir/*`, not `dir/`, or a negation cannot re-include a member. | Anyone adding a file type that might carry secrets |
 | `.env.example` | Local env var names (OWL, Workspace Token, DataWay/DK_DATAWAY, DataKit/StatsD, `LAB_ALERT_MEMBER_UUID` / `LAB_ALERT_EMAIL` for N3); copy to `.env`. | Anyone wiring ingest, OWL, or lab alert mail |
+| `.cursor/mcp.json.example` | Cursor MCP template: **OWL** (id1 Bearer) + **Tobylike legacy** (`us1-toby-ai` + `Endpoint=id2`); no secrets. | Anyone enabling dual MCP for N4 / v0.3.0 |
 | `requirements-emitter.txt` | Pinned pip deps for emitter image (`msgpack`, `opentelemetry-proto`). | Compose emit build; host optional for ddtrace/otel |
 | `docs/FILE-MAP.md` | This file. The exhaustive manifest. | Anyone about to create a new file |
 
@@ -75,6 +76,7 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `docs/design/README.md` | Rule that open proposals live in `docs/design/`, not in decision records, and must be marked `AWAITING DECISION`. | Anyone writing up an undecided question |
 | `docs/design/acceptance-criteria.md` | How to write acceptance criteria an agent can actually run: the Group A / Group B split, and how a Group B step is made auditable by a Group A command. | Anyone defining a milestone, phase or exit gate |
 | `docs/design/monitor-dashboard-as-code.md` | Design + accepted v0.2/v0.3 content; TF+JSON local state; CLI apply contract retained. | Before Monitor/Dashboard/notify IaC |
+| `docs/design/mcp-dual-verify.md` | N4 / v0.3.0: CLI + MCP (OWL **and** Tobylike) dual verify; acceptance + smoke evidence. | Before cutting MCP showcase / v0.3.0 |
 | `docs/runbooks/monitor-dashboard-tf.md` | How to `terraform init/plan/apply` lab closed-loop; local state; import notes. | Anyone applying v0.2.0 TF |
 | `docs/ADR/0004-tf-json-closed-loop.md` | Accepted: v0.2.0 TF+JSON+local state; v0.3.0 OWL+Tobylike MCP; Dashboard B; notify N3. | Before closed-loop or MCP dual-client work |
 | `terraform/` | v0.2.0 TrueWatch TF root (notify → alert policy → dashboard; monitor gated). | Anyone applying lab IaC |
@@ -92,6 +94,7 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `docs/truewatch-tips.md` | Lab-verified TrueWatch gotchas/tips. **Agents append new tips here** (see `AGENTS.md`). | Forkers and every agent after a Console/API surprise |
 | `docs/observability-glossary.md` | Metrics/Logs/APM/RUM glossary, span vs spam, and TrueWatch console ↔ signal map for this lab. | Forkers learning platform terms; anyone looking for `trace_id` in the wrong console |
 | `docs/runbooks/owl-cli-credentials.md` | Credentials runbook: Open API Key → OWL `.env` (§3–4), Workspace Token + DataWay (§5 W1–W5), OWL CLI install/verify (§6 A–G). | Forkers wiring OWL or ingest credentials |
+| `docs/runbooks/owl-mcp-cursor.md` | Wire Cursor OWL + Tobylike MCP; intent→tool map; CLI twin; dual HTTP smoke. | N4 / v0.3.0 dual smoke; agents answering MCP setup |
 | `docs/runbooks/dataway-emit.md` | Forker steps for DataWay via `EMIT_MODE=dataway` (Compose or host), then Explorer. | Anyone proving ADR-0001 DataWay path |
 | `docs/runbooks/datakit-emit.md` | Forker steps for Compose DataKit emit; documents lab series vs side-effect measurement `dk` (self-metrics). | Anyone proving ADR-0001 DataKit path |
 | `docs/runbooks/ddtrace-emit.md` | Forker steps for StatsD metric + DDTrace span via DataKit; OWL-first verify then Console. | Anyone proving v0.0.3 / ADR-0003 |
@@ -120,6 +123,8 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `scripts/emit.py` | Unified emitter: prefer `EMIT_MODE`; optional `--mode`; `--count` / `--interval` (default 5s). | Anyone emitting lab telemetry |
 | `scripts/lab_path_values.py` | Lab contract: default metric values per path (1/2/3/4); identity remains `path` tag. | `emit_*.py`; docs; dashboard demo |
 | `scripts/emit-dashboard-demo.sh` | Four-path emit with time stagger; uses `lab_path_values` defaults. | Dashboard / Metric Analysis multi-series |
+| `scripts/owl-readonly-smoke.sh` | Read-only `owl exec` smoke (four-path DQL + monitor list); machine twin of MCP intent checks. | N4 / v0.3.0 Path A verify; CI-shaped replay |
+| `scripts/mcp-dual-smoke.py` | HTTP smoke for **OWL MCP + Tobylike MCP** (handshake, monitors/checkers, metric query). | N4 / v0.3.0 Path B dual-client verify |
 | `scripts/emit_dataway.py` | DataWay mode (v0.0.1): synthetic metric/log to `/v1/write/…`; redacts token; lab User-Agent (avoids CF 1010). | Forkers / agents proving DataWay ingest |
 | `scripts/emit_datakit.py` | DataKit mode (v0.0.2): synthetic metric/log to local DataKit `/v1/write/…` (`DATAKIT_URL`, default `:9529`). | Forkers / agents proving DataKit ingest |
 | `scripts/emit_ddtrace.py` | DDTrace mode (v0.0.3): DogStatsD metric + `/v0.4/traces` span (needs msgpack). | Forkers / agents proving DDTrace ingest |

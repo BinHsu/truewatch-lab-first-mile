@@ -157,10 +157,11 @@ Per-path steps (OWL verify, Console, gotchas):
 | DataKit | [`docs/runbooks/datakit-emit.md`](docs/runbooks/datakit-emit.md) |
 | DDTrace | [`docs/runbooks/ddtrace-emit.md`](docs/runbooks/ddtrace-emit.md) |
 | OTel | [`docs/runbooks/otel-emit.md`](docs/runbooks/otel-emit.md) |
+| MCP (OWL + Tobylike) | [`docs/runbooks/owl-mcp-cursor.md`](docs/runbooks/owl-mcp-cursor.md) |
 
 Glossary (Metrics / APM / RUM / `trace_id`): [`docs/observability-glossary.md`](docs/observability-glossary.md)  
 OWL / MCP rules: [`docs/truewatch-owl.md`](docs/truewatch-owl.md)  
-TrueWatch tips (mailGroup id, `is_public`, `by path`, …): [`docs/truewatch-tips.md`](docs/truewatch-tips.md)
+TrueWatch tips (mailGroup id, `is_public`, `by path`, MCP gotchas, …): [`docs/truewatch-tips.md`](docs/truewatch-tips.md)
 
 ---
 
@@ -169,8 +170,10 @@ TrueWatch tips (mailGroup id, `is_public`, `by path`, …): [`docs/truewatch-tip
 - **v0.2.0:** shipped — Monitor + Dashboard + N3 email via TF+JSON (local state). See
   [`CHANGELOG.md`](CHANGELOG.md), [`docs/runbooks/monitor-dashboard-tf.md`](docs/runbooks/monitor-dashboard-tf.md),
   [ADR-0004](docs/ADR/0004-tf-json-closed-loop.md).
-- **v0.3.0:** OWL MCP + Tobylike MCP
+- **v0.3.0:** shipped — OWL MCP + Tobylike MCP + CLI twin. See [`CHANGELOG.md`](CHANGELOG.md),
+  [`docs/runbooks/owl-mcp-cursor.md`](docs/runbooks/owl-mcp-cursor.md).
 - Dashboard writes remain **not** via MCP
+- Later tags: TBD by owner
 
 ---
 

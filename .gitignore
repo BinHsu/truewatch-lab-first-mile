@@ -46,6 +46,8 @@ venv/
 
 # ─── Tooling / IDE / OS ───────────────────────────────────────
 .claude/settings.local.json
+# Local Cursor MCP with secrets; keep tracked .example
+.cursor/mcp.json
 .vscode/
 .idea/
 *.swp

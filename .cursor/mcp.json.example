@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "truewatch-owl": {
+      "url": "https://id1-owl-mcp.truewatch.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${OWL_TOKEN}"
+      }
+    },
+    "truewatch-toby-legacy": {
+      "url": "https://us1-toby-ai.truewatch.com/toby_ai_mcp/mcp",
+      "headers": {
+        "Authorization": "${OWL_TOKEN};Endpoint=id2"
+      }
+    }
+  }
+}

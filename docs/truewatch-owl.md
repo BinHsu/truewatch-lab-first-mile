@@ -40,11 +40,11 @@ Prefer the **OWL** stack. Do not treat the legacy Tobylike MCP page as current.
 
 ## Legacy vs current
 
-| | Legacy `/mcp-server/` | Current OWL MCP |
+| | Legacy `/mcp-server/` (Tobylike) | Current OWL MCP |
 |--|----------------------|-----------------|
-| URL example | `https://us1-toby-ai.truewatch.com/toby_ai_mcp/mcp` | `https://us1-owl-mcp.truewatch.com/mcp` |
-| Auth | `Authorization=DF-API-KEY;Endpoint=SITE_KEY` | `Authorization: Bearer <API Key>` |
-| Tools | Fixed high-level names (Monitor Management, Log Query, …) | Wrapper + `owl.*` via `exec_tool` |
+| URL example | `https://us1-toby-ai.truewatch.com/toby_ai_mcp/mcp` (global; **not** `id1-toby-ai`) | `https://id1-owl-mcp.truewatch.com/mcp` (per site) |
+| Auth | `Authorization: <API Key>;Endpoint=SITE_KEY` (id1 → `id2`) | `Authorization: Bearer <API Key>` |
+| Tools | Fixed high-level names (`list_checkers`, `query_metric_data`, …) | Wrapper + `owl.*` via `exec_tool` |
 
 If docs disagree, prefer OWL Quick Start / MCP Tools Reference over `/mcp-server/`.
 
@@ -52,6 +52,9 @@ If docs disagree, prefer OWL Quick Start / MCP Tools Reference over `/mcp-server
 
 Step-by-step console → `.env` → `owl sync`:
 [`docs/runbooks/owl-cli-credentials.md`](runbooks/owl-cli-credentials.md).
+
+Cursor MCP + dual smoke (CLI twin + intent map):
+[`docs/runbooks/owl-mcp-cursor.md`](runbooks/owl-mcp-cursor.md).
 
 OWL / Open API needs **Management → API Key Management** (Key Secret →
 `OWL_TOKEN`). **Management → Client Tokens** is RUM-only and returns

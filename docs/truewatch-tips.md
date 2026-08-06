@@ -194,6 +194,45 @@ still exit **0** — parse payload, do not trust exit code alone.
 
 See `docs/truewatch-owl.md`.
 
+### MCP metric query ≠ CLI `owl.data.query` (id1)
+
+**Symptom:** via OWL MCP `exec_tool`, `owl.data.query` / `owl.data.check_dql` return
+`Tool '…' not found`. CLI `owl exec owl.data.query` works on the same key.
+
+**Cause:** id1 MCP `data` catalog exposes **`owl.data.simple_query`** (assembled DQL), not the
+full-DQL `owl.data.query` tool. Docs may still mention `owl.data.query` for complex DQL.
+
+**Fix (MCP):** `exec_tool` → `owl.data.simple_query` with `namespace`, `source`,
+`select_clause`, `where_clause`, `start_time`, `end_time` (ms). Example lab ping:
+
+`namespace=M`, `source=truewatch_lab_first_mile`, `select_clause=last(ping), count(ping)`,
+`where_clause=path = 'dataway'`.
+
+**Fix (replayable twin):** keep using CLI `owl.data.query` in `scripts/owl-readonly-smoke.sh`.
+
+`[VERIFIED]` 2026-08-06T08:08:54Z id1 — MCP simple_query `last(ping)=1` / `count=7`;
+`owl.monitor.list` search `lab-first-mile` → 4 rules. Handshake `initialize` → server
+`owl-registry` 1.0.0.
+
+### Tobylike MCP is global host + SITE_KEY (not `id1-toby-ai`)
+
+**Symptom:** `id1-toby-ai.truewatch.com` does not resolve. Or Tobylike `initialize` works with
+Bearer, but `list_checkers` / `query_metric_data` return 401 against `openapi.guance.com`.
+
+**Cause:** Legacy Tobylike MCP is served from **`https://us1-toby-ai.truewatch.com/toby_ai_mcp/mcp`**.
+Workspace routing uses composite auth **`Authorization: <API Key Secret>;Endpoint=<SITE_KEY>`**.
+For Indonesia / id1 OpenAPI, SITE_KEY = **`id2`** (`SITE_KEY_MAP` in legacy MCP docs). Bearer-only
+is enough for OWL, **not** for Tobylike tool calls on this lab.
+
+**Also:** Tobylike needs `Mcp-Session-Id` from `initialize` (then `notifications/initialized`)
+before `tools/list` / `tools/call`. Tool names are fixed (`list_checkers`, `query_metric_data`, …),
+not `owl.*`.
+
+**Fix:** dual config in `.cursor/mcp.json.example`; replay with `python3 scripts/mcp-dual-smoke.py`.
+
+`[VERIFIED]` 2026-08-06T08:13:31Z — Tobylike `guance-mcp-server` 1.21.0; 4 lab checkers;
+`query_metric_data` `last(ping)=1` / `count=7` with `Endpoint=id2`. Bearer-only tool calls 401.
+
 ---
 
 ## Related lab docs
@@ -201,6 +240,7 @@ See `docs/truewatch-owl.md`.
 | Doc | Role |
 |---|---|
 | [`truewatch-owl.md`](truewatch-owl.md) | OWL / MCP / CLI rules |
+| [`runbooks/owl-mcp-cursor.md`](runbooks/owl-mcp-cursor.md) | Cursor MCP + dual smoke |
 | [`runbooks/monitor-dashboard-tf.md`](runbooks/monitor-dashboard-tf.md) | TF apply closed loop |
 | [`runbooks/owl-cli-credentials.md`](runbooks/owl-cli-credentials.md) | Credentials → `.env` |
 | [`observability-glossary.md`](observability-glossary.md) | Console ↔ signal map |

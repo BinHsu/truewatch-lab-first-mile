@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.3.0 — 2026-08-06 (OWL MCP + Tobylike MCP)
+
+Dual MCP showcase (ADR-0004) plus CLI replay twin — wiring face, not new ingest/TF features:
+
+- Cursor template: `.cursor/mcp.json.example` (OWL Bearer on id1 + Tobylike `Endpoint=id2`)
+- Runbook: `docs/runbooks/owl-mcp-cursor.md` (intent→tool map for both clients)
+- Smokes: `scripts/owl-readonly-smoke.sh` (CLI); `scripts/mcp-dual-smoke.py` (OWL + Tobylike HTTP)
+- Tips: MCP uses `owl.data.simple_query` (not `owl.data.query`); Tobylike global host + SITE_KEY
+- Design note: `docs/design/mcp-dual-verify.md`
+
+Dashboard create remains **not** via MCP (CLI / Terraform / console).
+
 ## v0.2.0 — 2026-08-06 (TF+JSON closed loop + N3 email)
 
 Monitor + Dashboard + email notify on site **id1**, verified end-to-end:
