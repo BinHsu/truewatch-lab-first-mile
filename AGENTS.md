@@ -53,7 +53,8 @@ sharp edges.
 **truewatch-lab-first-mile** is a public PDSA onboarding lab: a synthetic first-mile observability
 loop against TrueWatch (ingest → query → alert → optional AI/OWL assist). Archetype is closer to
 **stateless-sync** (short-lived emitter + docs), calibrated as **production-shaped harness at PoC
-scale** — aegis security scaffold kept; workload code still to be added. TrueWatch product rules
+scale** — aegis security scaffold kept; lab emitter + TF closed loop + MCP dual smoke are in-tree;
+product app workload beyond the lab harness is optional. TrueWatch product rules
 live in `docs/truewatch-owl.md`.
 
 ## 2. Files and their roles

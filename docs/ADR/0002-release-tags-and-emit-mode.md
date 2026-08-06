@@ -51,10 +51,10 @@ Precedence when both appear: `--mode` > `EMIT_MODE` > default `dataway`.
 
 ## Consequences
 
-- Mode-specific scripts: `emit_dataway.py`, `emit_datakit.py`, stubs for
-  `ddtrace` / `otel` until their tags.
+- Mode-specific scripts: `emit_dataway.py`, `emit_datakit.py`, `emit_ddtrace.py`,
+  `emit_otel.py` (unified via `emit.py` + `EMIT_MODE`).
 - `.env.example` documents `EMIT_MODE`.
-- Later tags supersede stubs without changing the `emit.py` UX.
+- Later tags (closed-loop / MCP) do not change the `emit.py` UX.
 
 ## Addendum — 2026-08-04
 
@@ -99,6 +99,11 @@ Owner accepted thin closed-loop + MCP tags. Canonical decision:
 
 **v0.2.0** tagged after id1 apply + four-path emit + N3 email verify (`mailGroup` → `acnt_…`).
 See `CHANGELOG.md` and `docs/truewatch-tips.md`.
+
+## Addendum — 2026-08-06 (v0.3.0 cut)
+
+**v0.3.0** tagged after CLI smoke + OWL MCP + Tobylike MCP (`Endpoint=id2`) verify.
+See `CHANGELOG.md`, `docs/runbooks/owl-mcp-cursor.md`, `docs/truewatch-tips.md`.
 
 ## Re-check trigger
 

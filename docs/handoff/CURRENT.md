@@ -10,7 +10,7 @@
 
 **Last updated:** 2026-08-06 — **v0.3.0** released:
 https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.3.0
-(tag commit `3d6c4d0`).
+(tag commit `3d6c4d0`). Post-cut markdown drift aligned to current state.
 
 ---
 
@@ -80,6 +80,8 @@ git fetch --tags && git show v0.3.0 --stat
 bash scripts/owl-readonly-smoke.sh
 python3 scripts/mcp-dual-smoke.py
 ```
+
+Next product tag TBD by owner.
 
 ## 10. Things that will bite you
 

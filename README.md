@@ -6,7 +6,8 @@ Public **PDSA lab**: prove a synthetic **first-mile** loop into TrueWatch —
 
 Checkpoint tags: **[v0.1.0](https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.1.0)** (paths + UT/CI),
 **[v0.1.1](https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.1.1)** (forker docs),
-**[v0.2.0](https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.2.0)** (TF closed loop + N3 email).
+**[v0.2.0](https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.2.0)** (TF closed loop + N3 email),
+**[v0.3.0](https://github.com/BinHsu/truewatch-lab-first-mile/releases/tag/v0.3.0)** (OWL + Tobylike MCP).
 
 **Status and next action live only in [`docs/handoff/CURRENT.md`](docs/handoff/CURRENT.md)** — not here.
 
@@ -165,7 +166,7 @@ TrueWatch tips (mailGroup id, `is_public`, `by path`, MCP gotchas, …): [`docs/
 
 ---
 
-## Still optional / next tags
+## Shipped tags / later TBD
 
 - **v0.2.0:** shipped — Monitor + Dashboard + N3 email via TF+JSON (local state). See
   [`CHANGELOG.md`](CHANGELOG.md), [`docs/runbooks/monitor-dashboard-tf.md`](docs/runbooks/monitor-dashboard-tf.md),

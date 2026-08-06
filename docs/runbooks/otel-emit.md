@@ -143,8 +143,10 @@ Not line-protocol `/v1/write/metric` and not DDTrace `/v0.4/traces`.
 
 ## Next
 
-- Owner Console verify for v0.0.3 and/or v0.0.4.
-- Tag `v0.0.4` when ready.
-- Deferred: payload unit tests + GHA (owner gate after Console).
+Four-path ingest through v0.0.4 is shipped. Continue with:
+
+- Closed loop: [`monitor-dashboard-tf.md`](monitor-dashboard-tf.md) (v0.2.0)
+- MCP dual clients: [`owl-mcp-cursor.md`](owl-mcp-cursor.md) (v0.3.0)
+- Payload tests (already in CI): `bash scripts/run-emit-payload-tests.sh`
 
 Status: `docs/handoff/CURRENT.md`.

@@ -35,7 +35,8 @@ Prefer the **OWL** stack. Do not treat the legacy Tobylike MCP page as current.
 - Skill: https://github.com/TrueWatchTech/ai-skills/tree/main/owl-diagnostics
 - Depends on a working local `owl` binary—not on the legacy Tobylike MCP URL
 - Prefer read-only tools; write ops (`create` / `replace` / `upsert` / `add` / …) only with explicit user intent
-- For DQL: discover → `owl.data.check_dql` → `owl.data.query` only when `valid=true`
+- For DQL: discover → `owl.data.check_dql` → `owl.data.query` only when `valid=true` (CLI).
+  On OWL MCP (id1), prefer `owl.data.simple_query` — see [`truewatch-tips.md`](truewatch-tips.md).
 - Save diagnostic reports under `./owl-reports/` by default when using the skill
 
 ## Legacy vs current

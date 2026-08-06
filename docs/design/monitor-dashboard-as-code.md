@@ -1,7 +1,7 @@
 # Design — Monitor / Dashboard as-code apply contract
 
-> Open design note (`docs/design/`). Not an ADR until the owner accepts scope + this
-> contract. Status: `docs/handoff/CURRENT.md`.
+> Design note (`docs/design/`). Release split and TF+JSON delivery **accepted** in
+> [ADR-0004](../ADR/0004-tf-json-closed-loop.md). Status: `docs/handoff/CURRENT.md`.
 
 ## Intent
 
@@ -11,11 +11,9 @@ dashboard can share one chain. JSON + OWL CLI remains a documented alternative.
 
 This note also records the CLI apply identity contract (path 1) and the release split.
 
-`AWAITING DECISION`: monitor checker JSON finalization; APM chart polish; when to tag v0.2.0.
-
 Release split **v0.2.0 / v0.3.0** and delivery **TF + JSON + local state**: **accepted**
-([ADR-0004](../ADR/0004-tf-json-closed-loop.md)). Scaffold: `terraform/`.
-
+([ADR-0004](../ADR/0004-tf-json-closed-loop.md)). Scaffold: `terraform/`. Both tags are cut
+(see `CHANGELOG.md`). Remaining optional polish: APM chart detail on the dashboard template.
 ---
 
 ## Proposed releases
@@ -27,7 +25,7 @@ Release split **v0.2.0 / v0.3.0** and delivery **TF + JSON + local state**: **ac
 
 v0.2.0 does **not** require MCP. v0.3.0 does **not** re-litigate Dashboard create via MCP (still unsupported).
 
-Graduate tags into ADR-0002 addendum (or ADR-0004) when v0.2.0 work starts.
+Tags live in [ADR-0002](../ADR/0002-release-tags-and-emit-mode.md) addenda and [ADR-0004](../ADR/0004-tf-json-closed-loop.md).
 
 ---
 
@@ -155,13 +153,10 @@ Empty state + existing cloud resources ≈ path 1 without uuid write-back: risk 
 
 ## Out of scope here
 
-- Exact chart queries / monitor thresholds for the lab ping series (separate when v0.2.0 starts).
 - Deleting probe or lab monitors (needs explicit owner `confirm` each time).
-- Implementing the apply script (only after the release plan is accepted).
-- Full Cursor MCP client wiring details (belong in v0.3.0 runbook).
+- MCP dashboard create (unsupported; see v0.3.0 runbook [`owl-mcp-cursor.md`](../runbooks/owl-mcp-cursor.md)).
 
 ## Re-check trigger
 
 - OWL renames upsert semantics or documents create-on-missing-uuid.
-- Owner picks Terraform as the lab default for Monitor/Dashboard.
-- Owner drops Tobylike from v0.3.0 (OWL-only) or rejects the 0.2 / 0.3 split.
+- Owner requires remote Terraform state instead of local.

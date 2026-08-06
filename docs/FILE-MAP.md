@@ -32,7 +32,7 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `AGENTS.md` | The operating contract for every agent and human: read-first order, single-source-of-status, handoff protocol, evidence standard, decision records, never-commit list, tool-access classes, destructive-action protocol, and the rule against checks that cannot fail. Tool-agnostic. | Any agent or contributor, first |
 | `CLAUDE.md` | Claude Code-only mechanics on top of `AGENTS.md`, which it imports on line 1. Permissions, delegation boundary, conflict resolution. Holds no shared policy. | Claude Code sessions |
 | `README.md` | What this lab is (TrueWatch first-mile), start-here pointers, four-path web-console compare (`by path` tip). Status lives only in handoff. | Forkers, first-time readers |
-| `CHANGELOG.md` | Release notes for git tags v0.0.1–v0.1.1 (ingest slices + lab checkpoint + docs close-out). | Anyone cutting or consuming a release tag |
+| `CHANGELOG.md` | Release notes for git tags v0.0.1–v0.3.0 (ingest → TF closed loop → MCP dual smoke). | Anyone cutting or consuming a release tag |
 | `docker-compose.yml` | Compose: `emit` + optional `datakit` (profile) with `dk,ddtrace,statsd,opentelemetry` (v0.0.2–v0.0.4). | Forkers preferring a clean Docker host |
 | `SECURITY.md` | Security ground rules an agent must not guess at: secrets, untrusted input, external actions, dependencies. | Reviewers; anyone touching secrets or external systems |
 | `PRODUCT_SENSE.md` | The product red line that hidden destructive actions are a defect, plus the preview/confirm/log/abort protocol. Restates the protocol also given in `AGENTS.md` §10. | Any agent before a destructive command |
@@ -75,8 +75,8 @@ The rows below describe the scaffold as shipped. **Replace them as you replace t
 | `docs/THREAT_MODEL.md` | STRIDE-lite entry template, one per security-sensitive surface, plus the agent-era additions. **Template only until a surface exists.** | Anyone changing auth, crypto, payments or PII handling |
 | `docs/design/README.md` | Rule that open proposals live in `docs/design/`, not in decision records, and must be marked `AWAITING DECISION`. | Anyone writing up an undecided question |
 | `docs/design/acceptance-criteria.md` | How to write acceptance criteria an agent can actually run: the Group A / Group B split, and how a Group B step is made auditable by a Group A command. | Anyone defining a milestone, phase or exit gate |
-| `docs/design/monitor-dashboard-as-code.md` | Design + accepted v0.2/v0.3 content; TF+JSON local state; CLI apply contract retained. | Before Monitor/Dashboard/notify IaC |
-| `docs/design/mcp-dual-verify.md` | N4 / v0.3.0: CLI + MCP (OWL **and** Tobylike) dual verify; acceptance + smoke evidence. | Before cutting MCP showcase / v0.3.0 |
+| `docs/design/monitor-dashboard-as-code.md` | Accepted design retained for CLI apply contract + v0.2/v0.3 split (ADR-0004). | Understanding TF vs CLI closed-loop history |
+| `docs/design/mcp-dual-verify.md` | Accepted N4 / v0.3.0 design: CLI + OWL + Tobylike MCP dual verify; non-goals. | Replay MCP showcase intent; not live status |
 | `docs/runbooks/monitor-dashboard-tf.md` | How to `terraform init/plan/apply` lab closed-loop; local state; import notes. | Anyone applying v0.2.0 TF |
 | `docs/ADR/0004-tf-json-closed-loop.md` | Accepted: v0.2.0 TF+JSON+local state; v0.3.0 OWL+Tobylike MCP; Dashboard B; notify N3. | Before closed-loop or MCP dual-client work |
 | `terraform/` | v0.2.0 TrueWatch TF root (notify → alert policy → dashboard; monitor gated). | Anyone applying lab IaC |

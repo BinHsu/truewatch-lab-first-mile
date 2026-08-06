@@ -22,8 +22,8 @@ Trial UI language may be EN/ZH mixed.
 | Real browser/app UX | **RUM** / **Real User Monitoring** → Session / View / … | Needs RUM SDK + **Client Token** (≠ OWL API Key, ≠ Workspace Token) |
 | Synthetic probes | **Synthetic Tests** (or similar) | Not in current emit modes |
 | Hosts / containers / K8s objects | **Infrastructure** | Often from DataKit collectors; OWL `owl.infrastructure.*` |
-| Alerts | **Monitoring** / Monitors | Optional lab scope (`AWAITING DECISION`) |
-| Charts | **Scenarios** / Dashboards | Optional; Dashboard writes via CLI/console, not MCP |
+| Alerts | **Monitoring** / Monitors | Lab: four path fault monitors + N3 mail (v0.2.0 TF); see [`runbooks/monitor-dashboard-tf.md`](runbooks/monitor-dashboard-tf.md) |
+| Charts | **Scenarios** / Dashboards | Lab dashboard `lab-first-mile` (v0.2.0); writes via TF/CLI/console, **not** MCP |
 | Custom saved queries | **Scenarios** → **Explorer** list (can pin into Metrics/Logs/APM menus) | — |
 
 **Explorer** is the shared “query + filter + table/chart” UI pattern reused under Metrics, Logs, APM, RUM, etc.
@@ -34,8 +34,10 @@ Trial UI language may be EN/ZH mixed.
 |---|---|---|
 | DataWay / DataKit **metric** `ping` | **Metrics** | Same measurement `truewatch_lab_first_mile`; distinguish with **`path=`** / Metric Analysis **`by path`** (empty `by` + Avg merges both). Map: [`README.md`](../README.md#compare-all-four-in-the-web-console) |
 | DataKit self-metrics | **Metrics** measurement **`dk`** | Side effect of `ENV_DEFAULT_ENABLED_INPUTS=dk` — see [`runbooks/datakit-emit.md`](runbooks/datakit-emit.md) |
-| Traces | **APM** | Not yet — stubs until v0.0.3 / v0.0.4 |
+| Traces | **APM** | Proven: ddtrace + otel spans — [`runbooks/ddtrace-emit.md`](runbooks/ddtrace-emit.md), [`runbooks/otel-emit.md`](runbooks/otel-emit.md) |
 | RUM | **RUM** | Out of ADR ingest set; Client Token gotcha only |
+| Monitors / notify | **Monitoring** | Proven: v0.2.0 TF closed loop + N3 email |
+| MCP dual clients | IDE / agent | Proven: v0.3.0 OWL + Tobylike — [`runbooks/owl-mcp-cursor.md`](runbooks/owl-mcp-cursor.md) |
 
 ---
 
@@ -122,7 +124,7 @@ If someone says **spam** in this context, ask whether they mean **span**. Alert/
 | **Self-metrics (`dk`)** | DataKit’s own health metrics — not the lab `ping` series. |
 | **DaemonSet / sidecar** | K8s ways to run DataKit. |
 | **Operator (DataKit Operator)** | Can auto-inject language APM agents into pods. |
-| **DQL** | Query language; OWL `owl.data.query`. |
+| **DQL** | Query language. CLI: `owl.data.query`. MCP (id1): prefer `owl.data.simple_query` (see tips). |
 | **Monitor** | Alert rule. |
 | **Dashboard** | Chart board. |
 | **Workspace Token** | Ingest write (`tkn_…`) — not OWL. |
@@ -131,7 +133,7 @@ If someone says **spam** in this context, ask whether they mean **span**. Alert/
 
 ---
 
-## Release modes in this lab
+## Emit modes in this lab
 
 | Tag | Mode | Signal you prove |
 |---|---|---|
@@ -140,4 +142,6 @@ If someone says **spam** in this context, ask whether they mean **span**. Alert/
 | v0.0.3 | `ddtrace` | **StatsD metric + DDTrace span** (DataKit translates) — see [`runbooks/ddtrace-emit.md`](runbooks/ddtrace-emit.md) |
 | v0.0.4 | `otel` | **OTLP metric + OTLP span** (DataKit translates) |
 
-See [ADR-0002](ADR/0002-release-tags-and-emit-mode.md), [ADR-0003](ADR/0003-otel-trace-path.md).
+Closed-loop / MCP tags (not emit modes): **v0.2.0** TF monitors+dashboard+N3; **v0.3.0** OWL+Tobylike MCP.
+See [ADR-0002](ADR/0002-release-tags-and-emit-mode.md), [ADR-0003](ADR/0003-otel-trace-path.md),
+[ADR-0004](ADR/0004-tf-json-closed-loop.md).

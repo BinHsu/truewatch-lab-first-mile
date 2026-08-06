@@ -111,7 +111,9 @@ Synthetic demo data only — no customer payloads.
 
 ## Next after this path works
 
-- DataKit path: [`datakit-emit.md`](datakit-emit.md) (`EMIT_MODE=datakit`, v0.0.2)
-- DDTrace path: still stub until **v0.0.3** (`NOT-IMPLEMENTED`, exit 2)
+- DataKit: [`datakit-emit.md`](datakit-emit.md) (`EMIT_MODE=datakit`, v0.0.2)
+- DDTrace: [`ddtrace-emit.md`](ddtrace-emit.md) (`EMIT_MODE=ddtrace`, v0.0.3)
+- OTel: [`otel-emit.md`](otel-emit.md) (`EMIT_MODE=otel`, v0.0.4)
+- Closed loop / MCP: [`monitor-dashboard-tf.md`](monitor-dashboard-tf.md), [`owl-mcp-cursor.md`](owl-mcp-cursor.md)
 
 Status: `docs/handoff/CURRENT.md`.
